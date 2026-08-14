@@ -415,7 +415,7 @@ export default function LandingPage() {
               <h3 className="text-[15px] font-semibold text-[#171A21]">Team</h3>
               <p className="mt-1 text-[13px] text-[#6B7280]">For teams working across workspaces.</p>
               <p className="mt-5 text-[32px] font-semibold text-[#171A21]">
-                $8<span className="text-[14px] font-normal text-[#6B7280]">/user/month</span>
+                $8<span className="text-[14px] font-normal text-[#6B7280]">/month</span>
               </p>
               <ul className="mt-6 flex flex-col gap-2.5">
                 {['Everything in Free', 'Unlimited workspaces', 'Invite unlimited members', 'Priority support'].map(
