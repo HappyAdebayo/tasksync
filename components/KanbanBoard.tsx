@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Plus, MoreVertical, Calendar, X, GripVertical, Trash2 } from 'lucide-react';
 import {
   DndContext,
@@ -22,33 +22,17 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { type CardItem, type ListItem, formatDueDate, dueDateTone, findContainer } from '@/lib/board-utils';
+import {
+  fetchBoardDetailsApi,
+  createBoardListApi,
+  updateBoardListApi,
+  deleteBoardListApi,
+  createTaskApi,
+  updateTaskApi,
+  deleteTaskApi,
+} from '@/lib/api';
 
-const initialLists: ListItem[] = [
-  {
-    id: 'todo',
-    title: 'To Do',
-    accent: '#4C5FD5',
-    cards: [
-      { id: 'c1', title: 'Draft Q3 roadmap outline', dueDate: '2026-08-15' },
-      { id: 'c2', title: 'Review design system tokens' },
-    ],
-  },
-  {
-    id: 'in-progress',
-    title: 'In Progress',
-    accent: '#E8A33D',
-    cards: [
-      { id: 'c3', title: 'Fix onboarding email bug', dueDate: '2026-08-12' },
-      { id: 'c4', title: 'Set up staging environment' },
-    ],
-  },
-  {
-    id: 'done',
-    title: 'Done',
-    accent: '#17C3B2',
-    cards: [{ id: 'c5', title: 'Ship navbar component' }],
-  },
-];
+const initialLists: ListItem[] = [];
 
 const HEX_COLOR_PATTERN = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
 
@@ -287,6 +271,10 @@ function ListColumn({
   const [pendingDeleteList, setPendingDeleteList] = useState(false);
   const { setNodeRef, isOver } = useDroppable({ id: list.id, data: { type: 'list' } });
 
+  useEffect(() => {
+    setTitleDraft(list.title);
+  }, [list.title]);
+
   function startRename() {
     setTitleDraft(list.title);
     setRenaming(true);
@@ -423,9 +411,16 @@ function ListColumn({
 
 const LIST_COLOR_PALETTE = ['#4C5FD5', '#17C3B2', '#E8A33D', '#C4453D', '#8A5CF6'];
 
-export default function KanbanBoard() {
+export default function KanbanBoard({ boardId }: { boardId?: string }) {
   const [lists, setLists] = useState<ListItem[]>(initialLists);
   const [activeCard, setActiveCard] = useState<CardItem | null>(null);
+  const [errorBanner, setErrorBanner] = useState<string | null>(null);
+
+  // Debounced queue timers for 3-second sync
+  const pendingTaskUpdates = useRef<Map<string, { boardListId?: string; position?: number; name?: string }>>(new Map());
+  const pendingListUpdates = useRef<Map<string, { name?: string }>>(new Map());
+  const taskTimers = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const listTimers = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
@@ -433,32 +428,162 @@ export default function KanbanBoard() {
 
   const nextDefaultColor = LIST_COLOR_PALETTE[lists.length % LIST_COLOR_PALETTE.length];
 
-  function addCard(listId: string, title: string) {
+  // Fetch lists for boardId if present
+  useEffect(() => {
+    if (!boardId) return;
+    let mounted = true;
+
+    async function loadBoardLists() {
+      try {
+        const remoteLists = await fetchBoardDetailsApi(boardId!);
+        if (mounted && Array.isArray(remoteLists) && remoteLists.length > 0) {
+          const mapped: ListItem[] = remoteLists.map((item, index) => ({
+            id: item.id,
+            title: item.name,
+            accent: item.color || LIST_COLOR_PALETTE[index % LIST_COLOR_PALETTE.length],
+            cards: [],
+          }));
+          setLists(mapped);
+        }
+      } catch {
+        // Fallback to default lists
+      }
+    }
+
+    loadBoardLists();
+
+    return () => {
+      mounted = false;
+    };
+  }, [boardId]);
+
+  // 3-second debounced task update sync function
+  const scheduleTaskSync = useCallback((taskId: string, payload: { boardListId?: string; position?: number; name?: string }) => {
+    // Merge payload
+    const existing = pendingTaskUpdates.current.get(taskId) || {};
+    pendingTaskUpdates.current.set(taskId, { ...existing, ...payload });
+
+    // Clear existing timer for this task if any
+    const existingTimer = taskTimers.current.get(taskId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    // Set new timer for 3000ms (3 seconds)
+    const timer = setTimeout(async () => {
+      const updatePayload = pendingTaskUpdates.current.get(taskId);
+      if (updatePayload) {
+        try {
+          await updateTaskApi(taskId, updatePayload);
+        } catch (err: any) {
+          setErrorBanner(err?.message || 'Failed to sync task change to server.');
+        }
+        pendingTaskUpdates.current.delete(taskId);
+        taskTimers.current.delete(taskId);
+      }
+    }, 3000);
+
+    taskTimers.current.set(taskId, timer);
+  }, []);
+
+  // 3-second debounced list update sync function
+  const scheduleListSync = useCallback((listId: string, payload: { name?: string }) => {
+    const existing = pendingListUpdates.current.get(listId) || {};
+    pendingListUpdates.current.set(listId, { ...existing, ...payload });
+
+    const existingTimer = listTimers.current.get(listId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    const timer = setTimeout(async () => {
+      const updatePayload = pendingListUpdates.current.get(listId);
+      if (updatePayload) {
+        try {
+          await updateBoardListApi(listId, updatePayload);
+        } catch (err: any) {
+          setErrorBanner(err?.message || 'Failed to sync list change to server.');
+        }
+        pendingListUpdates.current.delete(listId);
+        listTimers.current.delete(listId);
+      }
+    }, 3000);
+
+    listTimers.current.set(listId, timer);
+  }, []);
+
+  async function addCard(listId: string, title: string) {
+    const tempId = crypto.randomUUID();
     setLists((prev) =>
       prev.map((list) =>
         list.id === listId
-          ? { ...list, cards: [...list.cards, { id: crypto.randomUUID(), title }] }
+          ? { ...list, cards: [...list.cards, { id: tempId, title }] }
           : list
       )
     );
+
+    try {
+      const created = await createTaskApi({ name: title, boardListId: listId });
+      if (created?.id) {
+        setLists((prev) =>
+          prev.map((list) =>
+            list.id === listId
+              ? {
+                  ...list,
+                  cards: list.cards.map((c) => (c.id === tempId ? { ...c, id: created.id } : c)),
+                }
+              : list
+          )
+        );
+      }
+    } catch (err: any) {
+      setErrorBanner(err?.message || 'Failed to save card to server.');
+    }
   }
 
-  function deleteCard(cardId: string) {
-    setLists((prev) =>
-      prev.map((list) => ({ ...list, cards: list.cards.filter((c) => c.id !== cardId) }))
-    );
+  async function deleteCard(cardId: string) {
+    try {
+      await deleteTaskApi(cardId);
+      // Remove from UI only after API call succeeds
+      setLists((prev) =>
+        prev.map((list) => ({ ...list, cards: list.cards.filter((c) => c.id !== cardId) }))
+      );
+    } catch (err: any) {
+      setErrorBanner(err?.message || 'Failed to delete card on server.');
+    }
   }
 
-  function addList(title: string, accent: string) {
-    setLists((prev) => [...prev, { id: crypto.randomUUID(), title, accent, cards: [] }]);
+  async function addList(title: string, accent: string) {
+    const tempId = crypto.randomUUID();
+    setLists((prev) => [...prev, { id: tempId, title, accent, cards: [] }]);
+
+    if (boardId) {
+      try {
+        const created = await createBoardListApi({ name: title, color: accent, boardId });
+        if (created?.id) {
+          setLists((prev) =>
+            prev.map((l) => (l.id === tempId ? { ...l, id: created.id } : l))
+          );
+        }
+      } catch (err: any) {
+        setErrorBanner(err?.message || 'Failed to save list to server.');
+      }
+    }
   }
 
   function renameList(listId: string, title: string) {
     setLists((prev) => prev.map((list) => (list.id === listId ? { ...list, title } : list)));
+    scheduleListSync(listId, { name: title });
   }
 
-  function deleteList(listId: string) {
-    setLists((prev) => prev.filter((list) => list.id !== listId));
+  async function deleteList(listId: string) {
+    try {
+      await deleteBoardListApi(listId);
+      // Remove from UI only after API call succeeds
+      setLists((prev) => prev.filter((list) => list.id !== listId));
+    } catch (err: any) {
+      setErrorBanner(err?.message || 'Failed to delete list on server.');
+    }
   }
 
   function handleDragStart(event: DragStartEvent) {
@@ -488,6 +613,9 @@ export default function KanbanBoard() {
 
       const overIndex = overList.cards.findIndex((c) => c.id === overId);
       const insertAt = overIndex >= 0 ? overIndex : overList.cards.length;
+
+      // Schedule 3-second debounced API update for moved card position & container
+      scheduleTaskSync(activeId, { boardListId: overContainer, position: insertAt });
 
       return prev.map((list) => {
         if (list.id === activeContainer) {
@@ -520,6 +648,10 @@ export default function KanbanBoard() {
         const oldIndex = list.cards.findIndex((c) => c.id === activeId);
         const newIndex = list.cards.findIndex((c) => c.id === overId);
         if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return list;
+
+        // Schedule 3-second debounced API update for reordered position
+        scheduleTaskSync(activeId, { boardListId: activeContainer, position: newIndex });
+
         return { ...list, cards: arrayMove(list.cards, oldIndex, newIndex) };
       })
     );
@@ -533,18 +665,31 @@ export default function KanbanBoard() {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="board-scroll flex h-full items-start gap-4 overflow-x-auto px-6 py-5">
-        {lists.map((list) => (
-          <ListColumn
-            key={list.id}
-            list={list}
-            onAddCard={addCard}
-            onDeleteCard={deleteCard}
-            onRenameList={renameList}
-            onDeleteList={deleteList}
-          />
-        ))}
-        <AddListColumn onAdd={addList} defaultColor={nextDefaultColor} />
+      <div className="flex flex-col h-full">
+        {errorBanner && (
+          <div className="mx-6 mt-3 flex items-center justify-between rounded-xl bg-red-50 px-4 py-2.5 text-[13px] font-medium text-[#C4453D] border border-red-100">
+            <span>{errorBanner}</span>
+            <button
+              onClick={() => setErrorBanner(null)}
+              className="ml-3 rounded p-1 text-[#C4453D] hover:bg-red-100"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+        <div className="board-scroll flex h-full items-start gap-4 overflow-x-auto px-6 py-5">
+          {lists.map((list) => (
+            <ListColumn
+              key={list.id}
+              list={list}
+              onAddCard={addCard}
+              onDeleteCard={deleteCard}
+              onRenameList={renameList}
+              onDeleteList={deleteList}
+            />
+          ))}
+          <AddListColumn onAdd={addList} defaultColor={nextDefaultColor} />
+        </div>
       </div>
 
       <DragOverlay dropAnimation={{ duration: 180, easing: 'ease' }}>

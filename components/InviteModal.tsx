@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X, Mail, Check } from 'lucide-react';
+import { sendInvitationApi } from '@/lib/api';
 
 type Role = 'editor' | 'viewer';
 
@@ -14,9 +15,7 @@ type Member = {
 };
 
 const initialMembers: Member[] = [
-  { id: 'm0', label: 'You', role: 'owner', initials: 'JD', color: '#4C5FD5' },
-  { id: 'm1', label: 'sarah@email.com', role: 'editor', initials: 'S', color: '#17C3B2' },
-  { id: 'm2', label: 'mike@email.com', role: 'viewer', initials: 'M', color: '#E8A33D' },
+  { id: 'm0', label: 'You', role: 'owner', initials: 'You', color: '#4C5FD5' },
 ];
 
 const roleTone: Record<Member['role'], string> = {
@@ -26,11 +25,13 @@ const roleTone: Record<Member['role'], string> = {
 };
 
 export default function InviteModal({
+  workspaceId,
   workspaceName,
   isOpen,
   onClose,
 }: {
-  workspaceName: string | undefined;
+  workspaceId: string;
+  workspaceName?: string;
   isOpen: boolean;
   onClose: () => void;
 }) {
@@ -38,19 +39,25 @@ export default function InviteModal({
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<Role>('editor');
   const [sentMessage, setSentMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  function handleSend() {
+  async function handleSend() {
     const trimmed = email.trim();
     if (!trimmed) return;
+    setErrorMessage(null);
+    setSentMessage(null);
+    
 
-    // TODO: replace with a real API call. On success, either the invitee
-    // gets added directly (if they already have an account) or receives
-    // a pending invite that shows up on their dashboard.
-    setSentMessage(`Invite sent to ${trimmed}`);
-    setEmail('');
-    setTimeout(() => setSentMessage(null), 3000);
+    try {
+      await sendInvitationApi({ email: trimmed, workspaceId, role });
+      setSentMessage(`Invite sent to ${trimmed}`);
+      setEmail('');
+      setTimeout(() => setSentMessage(null), 3000);
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Failed to send invite.');
+    }
   }
 
   function removeMember(id: string) {
@@ -126,6 +133,12 @@ export default function InviteModal({
             <p className="mt-2.5 flex items-center gap-1.5 text-[12.5px] font-medium text-[#128A7D]">
               <Check className="h-3.5 w-3.5" />
               {sentMessage}
+            </p>
+          )}
+
+          {errorMessage && (
+            <p className="mt-2.5 text-[12.5px] font-medium text-[#C4453D]">
+              {errorMessage}
             </p>
           )}
         </div>

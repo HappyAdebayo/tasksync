@@ -9,17 +9,7 @@ export type SearchItem = {
   meta?: string;
 };
 
-const people: SearchItem[] = [
-  { id: 'p1', label: 'Carlos Mendes', type: 'person' },
-  { id: 'p2', label: 'Casey Lin', type: 'person' },
-  { id: 'p3', label: 'Priya Chandran', type: 'person' },
-  { id: 'p4', label: 'Jordan Diaz', type: 'person' },
-  { id: 'p5', label: 'Marcus Webb', type: 'person' },
-  /**
-   * Wire this up to a real endpoint whenever one exists — swap this array
-   * for a fetch/query result and buildSearchIndex keeps working.
-   */
-];
+const people: SearchItem[] = [];
 
 /** Builds a fresh search index from the current workspaces + boards, so new boards show up immediately. */
 export function buildSearchIndex(workspaces: Workspace[], boards: Board[]): SearchItem[] {

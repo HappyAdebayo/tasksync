@@ -43,16 +43,20 @@ export default function NewWorkspaceModal({ open, onClose, onCreated }: NewWorks
 
   if (!open) return null;
 
-  function submit() {
+  async function submit() {
     const trimmed = name.trim();
     if (!trimmed) {
       setError('Give your workspace a name to continue.');
       nameRef.current?.focus();
       return;
     }
-    const workspace = createWorkspace({ name: trimmed, accent });
-    onCreated?.(workspace.id);
-    onClose();
+    try {
+      const workspace = await createWorkspace({ name: trimmed, accent });
+      onCreated?.(workspace.id);
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || 'Failed to create workspace.');
+    }
   }
 
   return (

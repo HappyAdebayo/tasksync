@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, LayoutGrid } from 'lucide-react';
+import { signupApi } from '@/lib/api';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -11,6 +13,8 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,14 +31,10 @@ export default function SignupPage() {
 
     setSubmitting(true);
     try {
-      // TODO: replace with your actual signup call, e.g.
-      // await fetch('/api/auth/signup', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ name, email, password }),
-      // });
-    } catch {
-      setError('Something went wrong. Please try again.');
+      await signupApi({ name: name.trim(), email: email.trim(), password });
+      router.push('/login');
+    } catch (err: any) {
+      setError(err?.message || 'Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
     }

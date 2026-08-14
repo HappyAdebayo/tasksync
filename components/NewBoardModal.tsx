@@ -52,21 +52,25 @@ export default function NewBoardModal({ open, onClose, defaultWorkspaceId, onCre
  
   if (!open) return null;
  
-  function submit() {
+  async function submit() {
     const trimmed = name.trim();
     if (!trimmed) {
       setError('Give your board a name to continue.');
       nameRef.current?.focus();
       return;
     }
-    const board = createBoard({
-      name: trimmed,
-      workspaceId,
-      accent,
-      description: description.trim() || undefined,
-    });
-    onCreated?.(board.id);
-    onClose();
+    try {
+      const board = await createBoard({
+        name: trimmed,
+        workspaceId,
+        accent,
+        description: description.trim() || undefined,
+      });
+      onCreated?.(board.id);
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || 'Failed to create board.');
+    }
   }
  
   return (

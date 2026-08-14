@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, LayoutGrid } from 'lucide-react';
+import { loginApi } from '@/lib/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,6 +12,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,14 +26,10 @@ export default function LoginPage() {
 
     setSubmitting(true);
     try {
-      // TODO: replace with your actual login call, e.g.
-      // await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // });
-    } catch {
-      setError('Invalid email or password.');
+      await loginApi({ email, password });
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err?.message || 'Invalid email or password.');
     } finally {
       setSubmitting(false);
     }

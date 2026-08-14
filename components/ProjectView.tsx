@@ -37,7 +37,7 @@ export default function ProjectView({
           to be looked up by `boardId` from a real lists/cards store
           (same pattern as lib/boards.ts) — happy to wire that up next.
         */}
-        <KanbanBoard />
+        <KanbanBoard boardId={boardId} />
       </div>
     </section>
   );

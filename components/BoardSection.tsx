@@ -92,10 +92,16 @@ export default function BoardsSection({
   const workspace = workspaces.find((w) => w.id === workspaceId);
   const boards = allBoards.filter((b) => b.workspaceId === workspaceId);
 
-  const handleDeleteClick = (e: React.MouseEvent, boardId: string) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleDeleteClick = async (e: React.MouseEvent, boardId: string) => {
     e.stopPropagation();
     if (pendingDeleteId === boardId) {
-      deleteBoard(boardId);
+      try {
+        await deleteBoard(boardId);
+      } catch (err: any) {
+        setErrorMessage(err?.message || 'Failed to delete board.');
+      }
       setPendingDeleteId(null);
     } else {
       setPendingDeleteId(boardId);
@@ -104,6 +110,14 @@ export default function BoardsSection({
 
   return (
     <section className="mx-auto max-w-[1100px] px-7 py-8">
+      {errorMessage && (
+        <div className="mb-4 flex items-center justify-between rounded-xl bg-red-50 px-4 py-2.5 text-[13px] font-medium text-[#C4453D] border border-red-100">
+          <span>{errorMessage}</span>
+          <button onClick={() => setErrorMessage(null)} className="ml-3 font-semibold hover:opacity-80">
+            ✕
+          </button>
+        </div>
+      )}
       <button
         onClick={onBack}
         className="mb-4 flex items-center gap-1 text-[13px] font-medium text-[#6B7280] transition-colors hover:text-[#4C5FD5]"
@@ -163,7 +177,7 @@ export default function BoardsSection({
         defaultWorkspaceId={workspaceId}
         onCreated={onSelectBoard}
       />
-      <InviteModal workspaceName={workspace?.name} isOpen={openInviteModal} onClose={() => setOpenInviteModal(false)} />
+      <InviteModal workspaceId={workspaceId} workspaceName={workspace?.name} isOpen={openInviteModal} onClose={() => setOpenInviteModal(false)} />
     </section>
   );
 }

@@ -16,10 +16,16 @@ export default function WorkspacesSection({
   const workspaces = useWorkspaces();
   const boards = useBoards();
 
-  const handleDeleteClick = (e: React.MouseEvent, workspaceId: string) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleDeleteClick = async (e: React.MouseEvent, workspaceId: string) => {
     e.stopPropagation();
     if (pendingDeleteId === workspaceId) {
-      deleteWorkspace(workspaceId);
+      try {
+        await deleteWorkspace(workspaceId);
+      } catch (err: any) {
+        setErrorMessage(err?.message || 'Failed to delete workspace.');
+      }
       setPendingDeleteId(null);
     } else {
       setPendingDeleteId(workspaceId);
@@ -28,6 +34,14 @@ export default function WorkspacesSection({
 
   return (
     <section className="px-7 py-8">
+      {errorMessage && (
+        <div className="mb-4 flex items-center justify-between rounded-xl bg-red-50 px-4 py-2.5 text-[13px] font-medium text-[#C4453D] border border-red-100">
+          <span>{errorMessage}</span>
+          <button onClick={() => setErrorMessage(null)} className="ml-3 font-semibold hover:opacity-80">
+            ✕
+          </button>
+        </div>
+      )}
       <div className="mb-5 flex items-center justify-between">
         <div>
           <h1 className="text-[19px] font-semibold text-[#171A21]">Workspaces</h1>

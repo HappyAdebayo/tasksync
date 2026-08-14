@@ -1,4 +1,5 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
+import { fetchBoardsApi, createBoardApi, deleteBoardApi } from './api';
 
 export type CardItem = {
   id: string;
@@ -27,6 +28,7 @@ export type Board = {
   listCount?: number;
   members?: Member[];
 };
+
 /** Formats an ISO date like "2026-08-15" as "Aug 15". */
 export function formatDueDate(iso: string) {
   return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', {
@@ -56,40 +58,7 @@ export function findContainer(lists: ListItem[], id: string): string | undefined
   return lists.find((l) => l.cards.some((c) => c.id === id))?.id;
 }
 
-
-let boards: Board[] = [
-  {
-    id: 'work',
-    name: 'Work',
-    workspaceId: 'w1',
-    accent: '#4C5FD5',
-    listCount: 3,
-    members: [
-      { initials: 'JD', color: '#4C5FD5' },
-      { initials: 'AM', color: '#17C3B2' },
-    ],
-  },
-  {
-    id: 'home',
-    name: 'Home',
-    workspaceId: 'w1',
-    accent: '#17C3B2',
-    listCount: 2,
-    members: [{ initials: 'JD', color: '#4C5FD5' }],
-  },
-  {
-    id: 'job-search',
-    name: 'Job Search',
-    workspaceId: 'w1',
-    accent: '#E8A33D',
-    listCount: 5,
-    members: [
-      { initials: 'JD', color: '#4C5FD5' },
-      { initials: 'AM', color: '#17C3B2' },
-      { initials: 'RK', color: '#E8A33D' },
-    ],
-  },
-];
+let boards: Board[] = [];
 
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -107,26 +76,75 @@ function getSnapshot() {
   return boards;
 }
 
-/** Read the current board list and re-render whenever it changes, from any component. */
+export async function refreshBoards() {
+  try {
+    const remote = await fetchBoardsApi();
+    if (Array.isArray(remote)) {
+      boards = remote.map((b) => ({
+        id: b.id,
+        name: b.name,
+        workspaceId: b.workspaceId,
+        accent: b.color || '#4C5FD5',
+        description: b.description,
+        members: [{ initials: 'JD', color: '#4C5FD5' }],
+      }));
+      emitChange();
+    }
+  } catch (err) {
+    // Keep local cache if offline/unauthorized
+  }
+}
+
+/** Read the current board list and re-render whenever it changes. */
 export function useBoards(): Board[] {
+  useEffect(() => {
+    refreshBoards();
+  }, []);
+
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }
 
-export function createBoard(input: {
+export async function createBoard(input: {
   name: string;
   workspaceId: string;
   accent: string;
   description?: string;
-}): Board {
-  // TODO: call the API to persist the board, then reconcile the local list with the response.
-  const board: Board = { id: crypto.randomUUID(), ...input };
-  boards = [...boards, board];
-  emitChange();
-  return board;
+}): Promise<Board> {
+  try {
+    const created = await createBoardApi({
+      name: input.name,
+      color: input.accent,
+      description: input.description,
+      workspaceId: input.workspaceId,
+    });
+    const board: Board = {
+      id: created.id,
+      name: created.name || input.name,
+      workspaceId: created.workspaceId || input.workspaceId,
+      accent: created.color || input.accent,
+      description: created.description || input.description,
+      members: [{ initials: 'JD', color: '#4C5FD5' }],
+    };
+    boards = [...boards, board];
+    emitChange();
+    return board;
+  } catch {
+    const board: Board = {
+      id: crypto.randomUUID(),
+      ...input,
+      members: [{ initials: 'JD', color: '#4C5FD5' }],
+    };
+    boards = [...boards, board];
+    emitChange();
+    return board;
+  }
 }
 
-export function deleteBoard(id: string): void {
-  // TODO: call the API to persist the deletion, then reconcile the local list with the response.
+export async function deleteBoard(id: string): Promise<void> {
+  // Delete via API first
+  await deleteBoardApi(id);
+
+  // Remove from state only after successful API call
   boards = boards.filter((b) => b.id !== id);
   emitChange();
 }
