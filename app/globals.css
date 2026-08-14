@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* Custom scrollbar for the Kanban board */
+.board-scroll {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #D3D7E3 transparent; /* Firefox: thumb track */
+}
+
+.board-scroll::-webkit-scrollbar {
+  height: 8px; /* horizontal scrollbar thickness */
+}
+
+.board-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.board-scroll::-webkit-scrollbar-thumb {
+  background-color: #D3D7E3;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.board-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #B0B4C0;
+}
