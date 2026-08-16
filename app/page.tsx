@@ -1,24 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import {
-  LayoutGrid,
-  ArrowRight,
-  Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  Quote,
-  Users,
-  MoveRight,
-  Palette,
-  CalendarClock,
-  Zap,
-  Check,
-} from 'lucide-react';
+import { LayoutGrid, ArrowRight, Menu, X, ChevronLeft, ChevronRight, Quote, Check, } from 'lucide-react';
 import { FAQS,TESTIMONIALS, FEATURES, STEPS } from '@/lib/landing-page-data';
-/* ---------- Data ---------- */
 
 
 
