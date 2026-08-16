@@ -40,6 +40,7 @@ const HEX_COLOR_PATTERN = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
 
 type RemoteDragState = {
   clientId: string;
+  boardId: string;
   cardId: string;
   cardTitle: string;
   user: { name: string; color: string; initials: string };
