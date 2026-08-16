@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
  
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
@@ -75,7 +75,7 @@ export default function NewBoardModal({ open, onClose, defaultWorkspaceId, onCre
  
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#171A21]/40 px-4 backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#101828]/40 px-4 backdrop-blur-[2px]"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -84,21 +84,21 @@ export default function NewBoardModal({ open, onClose, defaultWorkspaceId, onCre
         role="dialog"
         aria-modal="true"
         aria-labelledby="new-board-title"
-        className="w-full max-w-[420px] rounded-2xl border border-[#E3E5EC] bg-white p-6 shadow-[0_24px_48px_rgba(23,26,33,0.18)]"
+        className="w-full max-w-[420px] rounded-2xl border border-[#EAECF0] bg-white p-6 shadow-[0_24px_48px_rgba(23,26,33,0.18)]"
       >
         <div className="mb-5 flex items-start justify-between gap-3">
           <div>
-            <h2 id="new-board-title" className="text-[17px] font-semibold text-[#171A21]">
+            <h2 id="new-board-title" className="text-[17px] font-semibold text-[#101828]">
               Create a new board
             </h2>
-            <p className="mt-0.5 text-[13px] text-[#6B7280]">
+            <p className="mt-0.5 text-[13px] text-[#667085]">
               Boards hold your lists and cards for a project.
             </p>
           </div>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="rounded-lg p-1.5 text-[#6B7280] transition-colors hover:bg-[#F6F7FB] hover:text-[#171A21]"
+            className="rounded-lg p-1.5 text-[#667085] transition-colors hover:bg-[#F9FAFB] hover:text-[#101828]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -106,7 +106,7 @@ export default function NewBoardModal({ open, onClose, defaultWorkspaceId, onCre
  
         <div className="flex flex-col gap-4">
           <div>
-            <label htmlFor="board-name" className="mb-1.5 block text-[12.5px] font-medium text-[#171A21]">
+            <label htmlFor="board-name" className="mb-1.5 block text-[12.5px] font-medium text-[#101828]">
               Board name
             </label>
             <input
@@ -121,8 +121,8 @@ export default function NewBoardModal({ open, onClose, defaultWorkspaceId, onCre
                 if (e.key === 'Enter') submit();
               }}
               placeholder="e.g. Product Launch"
-              className={`w-full rounded-lg border bg-[#F6F7FB] px-3 py-2 text-[13.5px] text-[#171A21] outline-none transition-colors placeholder:text-[#6B7280] focus:border-[#4C5FD5] focus:bg-white ${
-                error ? 'border-[#C4453D]' : 'border-[#E3E5EC]'
+              className={`w-full rounded-lg border bg-[#F9FAFB] px-3 py-2 text-[13.5px] text-[#101828] outline-none transition-colors placeholder:text-[#667085] focus:border-[#4C5FD5] focus:bg-white ${
+                error ? 'border-[#C4453D]' : 'border-[#EAECF0]'
               }`}
             />
             {error && <p className="mt-1 text-[12px] text-[#C4453D]">{error}</p>}
@@ -130,14 +130,14 @@ export default function NewBoardModal({ open, onClose, defaultWorkspaceId, onCre
  
           {workspaces.length > 0 && (
             <div>
-              <label htmlFor="board-workspace" className="mb-1.5 block text-[12.5px] font-medium text-[#171A21]">
+              <label htmlFor="board-workspace" className="mb-1.5 block text-[12.5px] font-medium text-[#101828]">
                 Workspace
               </label>
               <select
                 id="board-workspace"
                 value={workspaceId}
                 onChange={(e) => setWorkspaceId(e.target.value)}
-                className="w-full rounded-lg border border-[#E3E5EC] bg-[#F6F7FB] px-3 py-2 text-[13.5px] text-[#171A21] outline-none transition-colors focus:border-[#4C5FD5] focus:bg-white"
+                className="w-full rounded-lg border border-[#EAECF0] bg-[#F9FAFB] px-3 py-2 text-[13.5px] text-[#101828] outline-none transition-colors focus:border-[#4C5FD5] focus:bg-white"
               >
                 {workspaces.map((w) => (
                   <option key={w.id} value={w.id}>
@@ -149,7 +149,7 @@ export default function NewBoardModal({ open, onClose, defaultWorkspaceId, onCre
           )}
  
           <div>
-            <span className="mb-1.5 block text-[12.5px] font-medium text-[#171A21]">Color</span>
+            <span className="mb-1.5 block text-[12.5px] font-medium text-[#101828]">Color</span>
             <div className="flex items-center gap-2">
               {ACCENTS.map((color) => (
                 <button
@@ -169,8 +169,8 @@ export default function NewBoardModal({ open, onClose, defaultWorkspaceId, onCre
           </div>
  
           <div>
-            <label htmlFor="board-description" className="mb-1.5 block text-[12.5px] font-medium text-[#171A21]">
-              Description <span className="font-normal text-[#6B7280]">(optional)</span>
+            <label htmlFor="board-description" className="mb-1.5 block text-[12.5px] font-medium text-[#101828]">
+              Description <span className="font-normal text-[#667085]">(optional)</span>
             </label>
             <textarea
               id="board-description"
@@ -178,7 +178,7 @@ export default function NewBoardModal({ open, onClose, defaultWorkspaceId, onCre
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What's this board for?"
-              className="w-full resize-none rounded-lg border border-[#E3E5EC] bg-[#F6F7FB] px-3 py-2 text-[13.5px] text-[#171A21] outline-none transition-colors placeholder:text-[#6B7280] focus:border-[#4C5FD5] focus:bg-white"
+              className="w-full resize-none rounded-lg border border-[#EAECF0] bg-[#F9FAFB] px-3 py-2 text-[13.5px] text-[#101828] outline-none transition-colors placeholder:text-[#667085] focus:border-[#4C5FD5] focus:bg-white"
             />
           </div>
         </div>
@@ -186,7 +186,7 @@ export default function NewBoardModal({ open, onClose, defaultWorkspaceId, onCre
         <div className="mt-6 flex items-center justify-end gap-2">
           <button
             onClick={onClose}
-            className="rounded-lg px-3.5 py-2 text-[13px] font-medium text-[#6B7280] transition-colors hover:bg-[#F6F7FB] hover:text-[#171A21]"
+            className="rounded-lg px-3.5 py-2 text-[13px] font-medium text-[#667085] transition-colors hover:bg-[#F9FAFB] hover:text-[#101828]"
           >
             Cancel
           </button>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -43,7 +43,7 @@ function AvatarStack({ members }: { members: NonNullable<Board['members']> }) {
         </span>
       ))}
       {members.length > 4 && (
-        <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#E3E5EC] text-[9.5px] font-bold text-[#6B7280] -ml-1.5">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#EAECF0] text-[9.5px] font-bold text-[#667085] -ml-1.5">
           +{members.length - 4}
         </span>
       )}
@@ -119,14 +119,14 @@ export default function DashboardOverviewPage() {
       )}
 
       {/* Hero Welcome Banner */}
-      <section className="relative mb-8 overflow-hidden rounded-3xl border border-[#E3E5EC] bg-gradient-to-br from-white via-white to-[#EEF0FD]/40 p-6 sm:p-8 shadow-xs">
+      <section className="relative mb-8 overflow-hidden rounded-3xl border border-[#EAECF0] bg-gradient-to-br from-white via-white to-[#EEF0FD]/40 p-6 sm:p-8 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EEF0FD] px-3 py-1 text-[12px] font-semibold text-[#4C5FD5]">
                 <Sparkles className="h-3.5 w-3.5" /> Workspace Overview
               </span>
-              <span className="text-[12.5px] text-[#8E95A5]">
+              <span className="text-[12.5px] text-[#98A2B3]">
                 {new Date().toLocaleDateString(undefined, {
                   weekday: 'long',
                   month: 'short',
@@ -134,10 +134,10 @@ export default function DashboardOverviewPage() {
                 })}
               </span>
             </div>
-            <h1 className="mt-3 font-[family-name:var(--font-display)] text-[26px] sm:text-[30px] font-bold text-[#171A21] tracking-tight">
+            <h1 className="mt-3 font-[family-name:var(--font-display)] text-[26px] sm:text-[30px] font-bold text-[#101828] tracking-tight">
               Welcome back, {userName}
             </h1>
-            <p className="mt-1 text-[14px] text-[#6B7280] max-w-xl">
+            <p className="mt-1 text-[14px] text-[#667085] max-w-xl">
               Keep your team aligned and tasks moving across your workspaces and boards in real time.
             </p>
           </div>
@@ -146,7 +146,7 @@ export default function DashboardOverviewPage() {
           <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={() => setWorkspaceModalOpen(true)}
-              className="flex items-center gap-2 rounded-xl border border-[#E3E5EC] bg-white px-4 py-2.5 text-[13px] font-semibold text-[#171A21] shadow-xs transition-all hover:border-[#4C5FD5] hover:text-[#4C5FD5] hover:shadow-sm"
+              className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-white px-4 py-2.5 text-[13px] font-semibold text-[#101828] shadow-xs transition-all hover:border-[#4C5FD5] hover:text-[#4C5FD5] hover:shadow-sm"
             >
               <Plus className="h-4 w-4" />
               New Workspace
@@ -163,34 +163,34 @@ export default function DashboardOverviewPage() {
 
         {/* Stats Row */}
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-          <div className="flex flex-col rounded-2xl border border-[#E3E5EC] bg-white p-4 transition-all hover:border-[#D3D7E3]">
-            <div className="flex items-center justify-between text-[#8E95A5]">
+          <div className="flex flex-col rounded-2xl border border-[#EAECF0] bg-white p-4 transition-all hover:border-[#D0D5DD]">
+            <div className="flex items-center justify-between text-[#98A2B3]">
               <span className="text-[12px] font-medium">Workspaces</span>
               <Layers className="h-4 w-4 text-[#4C5FD5]" />
             </div>
-            <span className="mt-2 text-[24px] font-bold text-[#171A21]">{workspaces.length}</span>
-            <span className="text-[11.5px] text-[#8E95A5]">Active team spaces</span>
+            <span className="mt-2 text-[24px] font-bold text-[#101828]">{workspaces.length}</span>
+            <span className="text-[11.5px] text-[#98A2B3]">Active team spaces</span>
           </div>
 
-          <div className="flex flex-col rounded-2xl border border-[#E3E5EC] bg-white p-4 transition-all hover:border-[#D3D7E3]">
-            <div className="flex items-center justify-between text-[#8E95A5]">
+          <div className="flex flex-col rounded-2xl border border-[#EAECF0] bg-white p-4 transition-all hover:border-[#D0D5DD]">
+            <div className="flex items-center justify-between text-[#98A2B3]">
               <span className="text-[12px] font-medium">Total Boards</span>
               <Kanban className="h-4 w-4 text-[#17C3B2]" />
             </div>
-            <span className="mt-2 text-[24px] font-bold text-[#171A21]">{boards.length}</span>
-            <span className="text-[11.5px] text-[#8E95A5]">Kanban boards active</span>
+            <span className="mt-2 text-[24px] font-bold text-[#101828]">{boards.length}</span>
+            <span className="text-[11.5px] text-[#98A2B3]">Kanban boards active</span>
           </div>
 
           <Link
             href="/dashboard/notifications"
-            className="flex flex-col rounded-2xl border border-[#E3E5EC] bg-white p-4 transition-all hover:border-[#4C5FD5] hover:shadow-xs group"
+            className="flex flex-col rounded-2xl border border-[#EAECF0] bg-white p-4 transition-all hover:border-[#4C5FD5] hover:shadow-xs group"
           >
-            <div className="flex items-center justify-between text-[#8E95A5]">
+            <div className="flex items-center justify-between text-[#98A2B3]">
               <span className="text-[12px] font-medium">Notifications</span>
               <Bell className="h-4 w-4 text-[#E8A33D] group-hover:scale-110 transition-transform" />
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-[24px] font-bold text-[#171A21]">{notifications.length}</span>
+              <span className="text-[24px] font-bold text-[#101828]">{notifications.length}</span>
               {unreadCount > 0 && (
                 <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-[#C4453D]">
                   {unreadCount} unread
@@ -202,8 +202,8 @@ export default function DashboardOverviewPage() {
             </span>
           </Link>
 
-          <div className="flex flex-col rounded-2xl border border-[#E3E5EC] bg-white p-4 transition-all hover:border-[#D3D7E3]">
-            <div className="flex items-center justify-between text-[#8E95A5]">
+          <div className="flex flex-col rounded-2xl border border-[#EAECF0] bg-white p-4 transition-all hover:border-[#D0D5DD]">
+            <div className="flex items-center justify-between text-[#98A2B3]">
               <span className="text-[12px] font-medium">Real-time Sync</span>
               <Activity className="h-4 w-4 text-emerald-600" />
             </div>
@@ -213,11 +213,11 @@ export default function DashboardOverviewPage() {
                   isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'
                 }`}
               />
-              <span className="text-[16px] font-bold text-[#171A21]">
+              <span className="text-[16px] font-bold text-[#101828]">
                 {isConnected ? 'Connected' : 'Connecting'}
               </span>
             </div>
-            <span className="text-[11.5px] text-[#8E95A5]">WebSocket Gateway</span>
+            <span className="text-[11.5px] text-[#98A2B3]">WebSocket Gateway</span>
           </div>
         </div>
       </section>
@@ -231,10 +231,10 @@ export default function DashboardOverviewPage() {
                 <Users className="h-4 w-4" />
               </span>
               <div>
-                <h3 className="text-[14.5px] font-semibold text-[#171A21]">
+                <h3 className="text-[14.5px] font-semibold text-[#101828]">
                   Pending Workspace Invitations ({pendingInvites.length})
                 </h3>
-                <p className="text-[12px] text-[#6B7280]">
+                <p className="text-[12px] text-[#667085]">
                   You have been invited to collaborate on these workspaces.
                 </p>
               </div>
@@ -251,11 +251,11 @@ export default function DashboardOverviewPage() {
             {pendingInvites.map((invite) => (
               <div
                 key={invite.id}
-                className="flex flex-col justify-between rounded-xl border border-[#E3E5EC] bg-white p-4 shadow-xs"
+                className="flex flex-col justify-between rounded-xl border border-[#EAECF0] bg-white p-4 shadow-xs"
               >
                 <div>
-                  <p className="text-[13.5px] font-semibold text-[#171A21]">{invite.title}</p>
-                  <p className="mt-1 text-[12.5px] text-[#6B7280]">{invite.message}</p>
+                  <p className="text-[13.5px] font-semibold text-[#101828]">{invite.title}</p>
+                  <p className="mt-1 text-[12.5px] text-[#667085]">{invite.message}</p>
                 </div>
                 <div className="mt-4 flex items-center gap-2">
                   <button
@@ -266,7 +266,7 @@ export default function DashboardOverviewPage() {
                   </button>
                   <button
                     onClick={() => respondToInvite(invite.id, invite.invitationToken!, 'decline')}
-                    className="flex-1 rounded-lg border border-[#E3E5EC] py-1.5 text-[12px] font-semibold text-[#6B7280] transition-colors hover:border-[#C4453D] hover:text-[#C4453D]"
+                    className="flex-1 rounded-lg border border-[#EAECF0] py-1.5 text-[12px] font-semibold text-[#667085] transition-colors hover:border-[#C4453D] hover:text-[#C4453D]"
                   >
                     Decline
                   </button>
@@ -283,10 +283,10 @@ export default function DashboardOverviewPage() {
         <section className="lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="font-[family-name:var(--font-display)] text-[18px] font-bold text-[#171A21]">
+              <h2 className="font-[family-name:var(--font-display)] text-[18px] font-bold text-[#101828]">
                 Workspaces
               </h2>
-              <p className="text-[12.5px] text-[#6B7280]">Select a workspace to manage its boards.</p>
+              <p className="text-[12.5px] text-[#667085]">Select a workspace to manage its boards.</p>
             </div>
             <Link
               href="/dashboard/workspaces"
@@ -304,7 +304,7 @@ export default function DashboardOverviewPage() {
               return (
                 <div
                   key={ws.id}
-                  className="group relative flex flex-col justify-between rounded-2xl border border-[#E3E5EC] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#4C5FD5]/40 hover:shadow-md"
+                  className="group relative flex flex-col justify-between rounded-2xl border border-[#EAECF0] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#4C5FD5]/40 hover:shadow-md"
                 >
                   <Link href={`/dashboard/workspaces?workspace=${ws.id}`} className="flex-1">
                     <div className="flex items-start justify-between">
@@ -317,22 +317,22 @@ export default function DashboardOverviewPage() {
                     </div>
 
                     <div className="mt-4">
-                      <h3 className="font-[family-name:var(--font-display)] text-[15.5px] font-bold text-[#171A21] group-hover:text-[#4C5FD5] transition-colors">
+                      <h3 className="font-[family-name:var(--font-display)] text-[15.5px] font-bold text-[#101828] group-hover:text-[#4C5FD5] transition-colors">
                         {ws.name}
                       </h3>
-                      <p className="mt-1 text-[12.5px] text-[#6B7280]">
+                      <p className="mt-1 text-[12.5px] text-[#667085]">
                         {wsBoards.length} {wsBoards.length === 1 ? 'board' : 'boards'} available
                       </p>
                     </div>
                   </Link>
 
-                  <div className="mt-4 flex items-center justify-between border-t border-[#F0F2F7] pt-3">
+                  <div className="mt-4 flex items-center justify-between border-t border-[#F2F4F7] pt-3">
                     <button
                       onClick={() => {
                         setSelectedWorkspaceForInvite(ws);
                         setInviteModalOpen(true);
                       }}
-                      className="text-[12px] font-medium text-[#6B7280] hover:text-[#4C5FD5] flex items-center gap-1"
+                      className="text-[12px] font-medium text-[#667085] hover:text-[#4C5FD5] flex items-center gap-1"
                     >
                       <Users className="h-3.5 w-3.5" /> Invite
                     </button>
@@ -343,7 +343,7 @@ export default function DashboardOverviewPage() {
                       className={`flex h-7 items-center gap-1 rounded-full px-2 text-[11.5px] font-medium transition-all ${
                         isPendingDelete
                           ? 'bg-red-500 text-white'
-                          : 'text-[#B0B4C0] hover:bg-red-50 hover:text-red-500'
+                          : 'text-[#98A2B3] hover:bg-red-50 hover:text-red-500'
                       }`}
                       title={isPendingDelete ? 'Click again to confirm delete' : 'Delete workspace'}
                     >
@@ -358,13 +358,13 @@ export default function DashboardOverviewPage() {
             {/* Add Workspace Card */}
             <button
               onClick={() => setWorkspaceModalOpen(true)}
-              className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D3D7E3] bg-[#FAFAFC] p-5 text-center transition-all hover:border-[#4C5FD5] hover:bg-white group"
+              className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D0D5DD] bg-[#F9FAFB] p-5 text-center transition-all hover:border-[#4C5FD5] hover:bg-white group"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-[#E3E5EC] text-[#6B7280] shadow-xs group-hover:border-[#4C5FD5] group-hover:text-[#4C5FD5] group-hover:scale-110 transition-all">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-[#EAECF0] text-[#667085] shadow-xs group-hover:border-[#4C5FD5] group-hover:text-[#4C5FD5] group-hover:scale-110 transition-all">
                 <Plus className="h-4 w-4" />
               </span>
-              <span className="mt-2 text-[13.5px] font-semibold text-[#171A21]">Create Workspace</span>
-              <span className="text-[11.5px] text-[#8E95A5]">Organize projects for your team</span>
+              <span className="mt-2 text-[13.5px] font-semibold text-[#101828]">Create Workspace</span>
+              <span className="text-[11.5px] text-[#98A2B3]">Organize projects for your team</span>
             </button>
           </div>
         </section>
@@ -373,10 +373,10 @@ export default function DashboardOverviewPage() {
         <section className="lg:col-span-1">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="font-[family-name:var(--font-display)] text-[18px] font-bold text-[#171A21]">
+              <h2 className="font-[family-name:var(--font-display)] text-[18px] font-bold text-[#101828]">
                 Quick Boards
               </h2>
-              <p className="text-[12.5px] text-[#6B7280]">Jump straight to a board</p>
+              <p className="text-[12.5px] text-[#667085]">Jump straight to a board</p>
             </div>
             <Link
               href="/dashboard/boards"
@@ -394,7 +394,7 @@ export default function DashboardOverviewPage() {
               return (
                 <div
                   key={board.id}
-                  className="group relative flex items-center justify-between rounded-2xl border border-[#E3E5EC] bg-white p-4 transition-all duration-150 hover:border-[#4C5FD5]/40 hover:shadow-xs"
+                  className="group relative flex items-center justify-between rounded-2xl border border-[#EAECF0] bg-white p-4 transition-all duration-150 hover:border-[#4C5FD5]/40 hover:shadow-xs"
                 >
                   <Link
                     href={`/dashboard/boards/${board.id}`}
@@ -405,10 +405,10 @@ export default function DashboardOverviewPage() {
                       style={{ backgroundColor: board.accent }}
                     />
                     <div className="min-w-0">
-                      <h4 className="font-semibold text-[14px] text-[#171A21] truncate group-hover:text-[#4C5FD5] transition-colors">
+                      <h4 className="font-semibold text-[14px] text-[#101828] truncate group-hover:text-[#4C5FD5] transition-colors">
                         {board.name}
                       </h4>
-                      <p className="text-[11.5px] text-[#8E95A5] truncate">
+                      <p className="text-[11.5px] text-[#98A2B3] truncate">
                         {ws?.name || 'Workspace'} &middot; {board.listCount ?? 0} lists
                       </p>
                     </div>
@@ -425,7 +425,7 @@ export default function DashboardOverviewPage() {
                       className={`flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition-all ${
                         isPendingDelete
                           ? 'bg-red-500 text-white'
-                          : 'text-[#B0B4C0] opacity-0 group-hover:opacity-100 hover:text-red-500'
+                          : 'text-[#98A2B3] opacity-0 group-hover:opacity-100 hover:text-red-500'
                       }`}
                       title={isPendingDelete ? 'Confirm delete' : 'Delete board'}
                     >
@@ -438,10 +438,10 @@ export default function DashboardOverviewPage() {
             })}
 
             {boards.length === 0 && (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#D3D7E3] bg-[#FAFAFC] p-8 text-center">
-                <Kanban className="h-7 w-7 text-[#B0B4C0]" />
-                <p className="mt-2 text-[13px] font-semibold text-[#171A21]">No boards yet</p>
-                <p className="text-[12px] text-[#8E95A5]">Create your first board to get started.</p>
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#D0D5DD] bg-[#F9FAFB] p-8 text-center">
+                <Kanban className="h-7 w-7 text-[#98A2B3]" />
+                <p className="mt-2 text-[13px] font-semibold text-[#101828]">No boards yet</p>
+                <p className="text-[12px] text-[#98A2B3]">Create your first board to get started.</p>
                 <button
                   onClick={() => setBoardModalOpen(true)}
                   className="mt-3 rounded-lg bg-[#4C5FD5] px-3.5 py-1.5 text-[12px] font-semibold text-white hover:bg-[#3E4EC0]"

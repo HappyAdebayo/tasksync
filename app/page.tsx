@@ -1,49 +1,167 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { LayoutGrid, ArrowRight, Menu, X, ChevronLeft, ChevronRight, Quote, Check, } from 'lucide-react';
-import { FAQS,TESTIMONIALS, FEATURES, STEPS } from '@/lib/landing-page-data';
+import {
+  Kanban, ArrowRight, Menu, X, Check, Zap,
+  Users, MoveRight, LayoutGrid, CalendarClock,
+  Palette, Star, Globe, Shield, ChevronDown,
+} from 'lucide-react';
+import { FAQS, TESTIMONIALS, FEATURES, STEPS } from '@/lib/landing-page-data';
 
+/* ─── Marquee ────────────────────────────────────────────────────────────── */
 
+const LOGOS = ['Stripe', 'Vercel', 'Figma', 'Linear', 'Notion', 'Loom', 'Framer', 'Retool', 'Intercom', 'Airtable'];
 
-/* ---------- Living board (hero signature element) ---------- */
+function Marquee() {
+  const doubled = [...LOGOS, ...LOGOS];
+  return (
+    <div className="relative overflow-hidden py-4 marquee-mask">
+      <div className="flex gap-10 marquee-track whitespace-nowrap">
+        {doubled.map((name, i) => (
+          <span key={i} className="inline-flex items-center gap-2 text-[14px] font-bold tracking-tight text-[#C0C4CC] flex-shrink-0">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#4C5FD5]/40" />
+            {name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-function LivingBoard() {
-  const columns = [
-    { accent: '#4C5FD5', cards: [58, 74, 40] },
-    { accent: '#E8A33D', cards: [66, 45] },
-    { accent: '#17C3B2', cards: [50, 62, 34] },
-  ];
+/* ─── App Window (Hero Centerpiece) ─────────────────────────────────────── */
+
+function AppWindow() {
+  const BOARD = {
+    name: 'Q3 Product Launch',
+    cols: [
+      {
+        color: '#4C5FD5', label: 'Backlog',
+        cards: [
+          { title: 'User research interviews', tag: 'Research', tagColor: '#8A5CF6', due: 'Aug 20', avatar: '#4C5FD5' },
+          { title: 'Competitive analysis doc', tag: 'Docs', tagColor: '#17C3B2', due: 'Aug 22', avatar: '#17C3B2' },
+          { title: 'Design system audit', tag: 'Design', tagColor: '#E8A33D', avatar: '#E8A33D' },
+        ],
+      },
+      {
+        color: '#17C3B2', label: 'In Progress',
+        cards: [
+          { title: 'Onboarding flow redesign', tag: 'Design', tagColor: '#E8A33D', due: 'Aug 18', avatar: '#4C5FD5', progress: 65 },
+          { title: 'API rate limiting service', tag: 'Backend', tagColor: '#4C5FD5', due: 'Aug 19', avatar: '#17C3B2', progress: 40 },
+        ],
+      },
+      {
+        color: '#E8A33D', label: 'Review',
+        cards: [
+          { title: 'Landing page copy pass', tag: 'Content', tagColor: '#C4453D', due: 'Aug 17', avatar: '#E8A33D', progress: 90 },
+          { title: 'Mobile performance audit', tag: 'Frontend', tagColor: '#4C5FD5', avatar: '#8A5CF6' },
+        ],
+      },
+      {
+        color: '#17C3B2', label: 'Done',
+        cards: [
+          { title: 'Auth flow implementation', tag: 'Backend', tagColor: '#4C5FD5', avatar: '#4C5FD5' },
+          { title: 'Figma handoff complete', tag: 'Design', tagColor: '#E8A33D', avatar: '#17C3B2' },
+        ],
+      },
+    ],
+  };
 
   return (
-    <div className="relative mx-auto w-full max-w-[420px]">
-      <div className="rounded-2xl border border-[#E3E5EC] bg-white p-4 shadow-[0_24px_60px_rgba(23,26,33,0.10)]">
-        <div className="mb-3 flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#E3E5EC]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#E3E5EC]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#E3E5EC]" />
-          <span className="ml-2 font-mono text-[10px] tracking-wide text-[#B0B4C0]">
-            product-launch.board
-          </span>
+    <div className="w-full select-none overflow-hidden rounded-2xl border border-white/[0.07] bg-[#13151F] shadow-[0_60px_120px_rgba(0,0,0,0.7)] ring-1 ring-white/[0.05]">
+      {/* Window bar */}
+      <div className="flex items-center gap-2 border-b border-white/[0.06] bg-[#0E1018]/80 px-4 py-3 backdrop-blur-sm">
+        <div className="flex items-center gap-1.5">
+          <span className="h-3 w-3 rounded-full bg-[#FF5F57]" />
+          <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
+          <span className="h-3 w-3 rounded-full bg-[#28C840]" />
+        </div>
+        <div className="ml-3 flex items-center gap-2 rounded-md border border-white/[0.06] bg-white/[0.04] px-3 py-1">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-mono text-[10px] text-white/30">app.tasksync.io / boards / {BOARD.name}</span>
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          {['#4C5FD5','#17C3B2','#E8A33D'].map((c, i) => (
+            <span key={i} style={{ background: c }} className="flex h-5 w-5 items-center justify-center rounded-full border border-white/10 text-[8px] font-bold text-white">
+              {['JD','SK','MO'][i]}
+            </span>
+          ))}
+          <span className="ml-1 text-[10px] text-white/25">3 online</span>
+        </div>
+      </div>
+
+      {/* Sidebar + Board */}
+      <div className="flex h-[360px]">
+        {/* Mini sidebar */}
+        <div className="hidden w-44 flex-shrink-0 border-r border-white/[0.05] bg-[#0E1018]/60 py-4 md:flex flex-col gap-0.5 px-2">
+          {[
+            { label: 'Dashboard', active: false },
+            { label: 'Workspaces', active: true },
+          ].map(item => (
+            <div
+              key={item.label}
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium ${
+                item.active ? 'bg-white/[0.08] text-white' : 'text-white/30'
+              }`}
+            >
+              <Kanban className="h-3 w-3" />
+              {item.label}
+            </div>
+          ))}
+          <div className="mt-4 px-3">
+            <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-widest text-white/20">Boards</p>
+            {BOARD.cols.slice(0, 3).map((_, i) => (
+              <div key={i} className="mb-1 flex items-center gap-2 rounded-md px-2 py-1.5">
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: _.color }} />
+                <span className="text-[10px] text-white/25 truncate">{_.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2.5">
-          {columns.map((col, ci) => (
-            <div key={ci} className="rounded-xl bg-[#F6F7FB] p-2">
-              <div className="mb-2 flex items-center gap-1.5 px-0.5">
-                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: col.accent }} />
-                <span className="h-1.5 w-8 rounded-full bg-[#D3D7E3]" />
+        {/* Board area */}
+        <div className="flex flex-1 items-start gap-3 overflow-x-auto p-4">
+          {BOARD.cols.map((col, ci) => (
+            <div key={ci} className="flex w-[170px] flex-shrink-0 flex-col rounded-xl border border-white/[0.06] bg-white/[0.03] overflow-hidden">
+              {/* Col header */}
+              <div className="flex items-center justify-between border-b border-white/[0.05] px-3 py-2.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: col.color }} />
+                  <span className="text-[10.5px] font-semibold text-white/60">{col.label}</span>
+                </div>
+                <span className="rounded-full bg-white/[0.07] px-1.5 py-0.5 text-[9px] font-bold text-white/30">
+                  {col.cards.length}
+                </span>
               </div>
-              <div className="flex flex-col gap-1.5">
-                {col.cards.map((w, ri) => (
+
+              {/* Cards */}
+              <div className="flex flex-col gap-2 p-2">
+                {col.cards.map((card, ri) => (
                   <div
                     key={ri}
-                    className="living-card rounded-lg border border-[#E3E5EC] bg-white p-2 shadow-[0_1px_2px_rgba(23,26,33,0.04)]"
-                    style={{ animationDelay: `${(ci * 3 + ri) * 0.15}s` }}
+                    className="app-card rounded-lg border border-white/[0.07] bg-[#1A1D2B] p-2.5"
+                    style={{ animationDelay: `${(ci * 0.08 + ri * 0.06)}s` }}
                   >
-                    <span className="block h-1.5 rounded-full bg-[#E3E5EC]" style={{ width: `${w}%` }} />
-                    <span className="mt-1.5 block h-1.5 w-6 rounded-full bg-[#EEEFF3]" />
+                    <p className="text-[10px] font-medium leading-snug text-white/75">{card.title}</p>
+                    {card.progress !== undefined && (
+                      <div className="mt-2 h-0.5 rounded-full bg-white/[0.08]">
+                        <div className="h-full rounded-full" style={{ width: `${card.progress}%`, background: col.color }} />
+                      </div>
+                    )}
+                    <div className="mt-2 flex items-center justify-between">
+                      <span
+                        className="rounded-md px-1.5 py-0.5 text-[8px] font-semibold"
+                        style={{ background: `${card.tagColor}18`, color: card.tagColor }}
+                      >
+                        {card.tag}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {card.due && <span className="text-[8px] text-white/20">{card.due}</span>}
+                        <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white/10 text-[6px] font-bold text-white" style={{ background: card.avatar }}>
+                          {['JD','SK','MO','PK'][ci]}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -52,450 +170,439 @@ function LivingBoard() {
         </div>
       </div>
 
-      {/* Ghost card that drifts from column 1 to column 3, looping */}
-      <div className="drift-card pointer-events-none absolute left-[8%] top-[38%] w-[26%] rounded-lg border border-[#4C5FD5]/30 bg-white p-2 shadow-[0_10px_24px_rgba(76,95,213,0.18)]">
-        <span className="block h-1.5 w-4/5 rounded-full bg-[#4C5FD5]/25" />
-        <span className="mt-1.5 block h-1.5 w-1/2 rounded-full bg-[#4C5FD5]/15" />
+      {/* Bottom status bar */}
+      <div className="flex items-center gap-3 border-t border-white/[0.05] bg-[#0E1018]/60 px-4 py-2">
+        <span className="flex items-center gap-1.5 text-[9.5px] text-white/25">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+          Live — last updated 2s ago
+        </span>
+        <span className="ml-auto text-[9.5px] text-white/15">TaskSync · v2.4.1</span>
       </div>
-
-      <style jsx>{`
-        .living-card {
-          animation: settle 0.6s ease both;
-        }
-        @keyframes settle {
-          from {
-            opacity: 0;
-            transform: translateY(6px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .drift-card {
-          animation: drift 7s ease-in-out infinite;
-        }
-        @keyframes drift {
-          0%,
-          8% {
-            transform: translate(0, 0);
-            opacity: 0;
-          }
-          14% {
-            opacity: 1;
-          }
-          45%,
-          55% {
-            transform: translate(150%, 10px);
-            opacity: 1;
-          }
-          80% {
-            transform: translate(300%, -6px);
-            opacity: 1;
-          }
-          92%,
-          100% {
-            transform: translate(300%, -6px);
-            opacity: 0;
-          }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .living-card,
-          .drift-card {
-            animation: none !important;
-            opacity: 1 !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
 
-/* ---------- Page ---------- */
+/* ─── FAQ accordion ─────────────────────────────────────────────────────── */
+
+function FAQ({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`group rounded-2xl border transition-all duration-200 ${open ? 'border-[#4C5FD5]/20 bg-[#F8F8FF]' : 'border-[#EAECF0] bg-white hover:border-[#D5D9E2]'}`}>
+      <button onClick={() => setOpen(v => !v)} className="flex w-full items-start justify-between gap-4 px-6 py-5 text-left">
+        <span className="text-[15px] font-semibold leading-snug text-[#101828]">{q}</span>
+        <ChevronDown className={`mt-0.5 h-4 w-4 flex-shrink-0 text-[#667085] transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${open ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <p className="px-6 pb-5 text-[14px] leading-relaxed text-[#667085]">{a}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Page ──────────────────────────────────────────────────────────────── */
 
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [tIndex, setTIndex] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+  const [tIdx, setTIdx] = useState(0);
 
-  function nextTestimonial() {
-    setTIndex((i) => (i + 1) % TESTIMONIALS.length);
-  }
-  function prevTestimonial() {
-    setTIndex((i) => (i - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
-  }
+  useEffect(() => {
+    const h = () => setScrolled(window.scrollY > 8);
+    window.addEventListener('scroll', h, { passive: true });
+    return () => window.removeEventListener('scroll', h);
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => setTIdx(i => (i + 1) % TESTIMONIALS.length), 4500);
+    return () => clearInterval(id);
+  }, []);
+
+  const NAV_LINKS = [
+    { label: 'Features', href: '#features' },
+    { label: 'How it works', href: '#how-it-works' },
+    { label: 'Pricing', href: '#pricing' },
+    { label: 'FAQ', href: '#faq' },
+  ];
 
   return (
-    <main className="bg-[#F6F7FB] text-[#171A21]">
-      {/* ---------- Nav ---------- */}
-      <header className="sticky top-0 z-30 border-b border-[#E3E5EC]/80 bg-[#F6F7FB]/85 backdrop-blur">
-        <div className="mx-auto flex max-w-[1160px] items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#4C5FD5] text-white">
-              <LayoutGrid className="h-4 w-4" />
+    <main className="overflow-x-hidden bg-white text-[#101828] antialiased">
+
+      {/* ═══ NAVBAR ═══════════════════════════════════════════════════════ */}
+      <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 shadow-[0_1px_0_#E4E7EC] backdrop-blur-xl' : ''}`}>
+        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 sm:px-8">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#4C5FD5] shadow-[0_2px_8px_rgba(76,95,213,0.35)]">
+              <Kanban className="h-4 w-4 text-white" />
             </span>
-            <span className="font-[family-name:var(--font-display)] text-[16px] font-semibold">
-              Flowdeck
+            <span className="font-[family-name:var(--font-display)] text-[15.5px] font-bold tracking-tight text-[#101828]">
+              TaskSync
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex">
-            <a href="#features" className="text-[13.5px] font-medium text-[#6B7280] hover:text-[#171A21]">
-              Features
-            </a>
-            <a href="#how-it-works" className="text-[13.5px] font-medium text-[#6B7280] hover:text-[#171A21]">
-              How it works
-            </a>
-            <a href="#pricing" className="text-[13.5px] font-medium text-[#6B7280] hover:text-[#171A21]">
-              Pricing
-            </a>
-            <a href="#faq" className="text-[13.5px] font-medium text-[#6B7280] hover:text-[#171A21]">
-              FAQ
-            </a>
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-1 md:flex">
+            {NAV_LINKS.map(l => (
+              <a key={l.label} href={l.href} className="rounded-lg px-3.5 py-2 text-[13.5px] font-medium text-[#667085] transition-colors hover:bg-[#F9FAFB] hover:text-[#101828]">
+                {l.label}
+              </a>
+            ))}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
-            <Link href="/login" className="text-[13.5px] font-medium text-[#6B7280] hover:text-[#171A21]">
+          <div className="hidden items-center gap-2.5 md:flex">
+            <Link href="/login" className="rounded-lg px-4 py-2 text-[13.5px] font-semibold text-[#667085] transition-colors hover:text-[#101828]">
               Log in
             </Link>
-            <Link
-              href="/signup"
-              className="rounded-full bg-[#4C5FD5] px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#3E4EC0]"
-            >
-              Start for free
+            <Link href="/signup" className="rounded-xl bg-[#101828] px-4 py-2 text-[13.5px] font-semibold text-white transition-all hover:bg-[#1D2939] hover:shadow-lg">
+              Get started free
             </Link>
           </div>
 
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Toggle menu"
-            className="rounded-md p-1.5 text-[#171A21] md:hidden"
-          >
+          <button onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu" className="rounded-lg p-2 text-[#667085] transition-colors hover:bg-[#F9FAFB] md:hidden">
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
 
-        {menuOpen && (
-          <div className="border-t border-[#E3E5EC] bg-[#F6F7FB] px-6 py-4 md:hidden">
-            <div className="flex flex-col gap-3">
-              <a href="#features" className="text-[14px] font-medium text-[#171A21]">
-                Features
+        {/* Mobile dropdown */}
+        <div className={`overflow-hidden border-t border-[#F2F4F7] bg-white/95 backdrop-blur-xl transition-all duration-200 md:hidden ${menuOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="flex flex-col gap-0.5 px-4 py-3">
+            {NAV_LINKS.map(l => (
+              <a key={l.label} href={l.href} onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-[14px] font-medium text-[#344054] hover:bg-[#F9FAFB]">
+                {l.label}
               </a>
-              <a href="#how-it-works" className="text-[14px] font-medium text-[#171A21]">
-                How it works
-              </a>
-              <a href="#pricing" className="text-[14px] font-medium text-[#171A21]">
-                Pricing
-              </a>
-              <a href="#faq" className="text-[14px] font-medium text-[#171A21]">
-                FAQ
-              </a>
-              <div className="mt-2 flex items-center gap-3 border-t border-[#E3E5EC] pt-4">
-                <Link href="/login" className="text-[14px] font-medium text-[#6B7280]">
-                  Log in
-                </Link>
-                <Link
-                  href="/signup"
-                  className="rounded-full bg-[#4C5FD5] px-4 py-2 text-[13.5px] font-medium text-white"
-                >
-                  Start for free
-                </Link>
-              </div>
+            ))}
+            <div className="mt-2 flex gap-2 border-t border-[#F2F4F7] pt-3">
+              <Link href="/login" className="flex-1 rounded-xl border border-[#D0D5DD] py-2.5 text-center text-[13.5px] font-semibold text-[#344054]">Log in</Link>
+              <Link href="/signup" className="flex-1 rounded-xl bg-[#101828] py-2.5 text-center text-[13.5px] font-semibold text-white">Get started</Link>
             </div>
           </div>
-        )}
+        </div>
       </header>
 
-      {/* ---------- Hero ---------- */}
-      <section
-        className="relative overflow-hidden px-6 pb-20 pt-16 md:pt-24"
-        style={{
-          backgroundImage: 'radial-gradient(#E3E5EC 1px, transparent 1px)',
-          backgroundSize: '22px 22px',
-          backgroundPosition: '-11px -11px',
-        }}
-      >
-        <div className="mx-auto grid max-w-[1160px] items-center gap-14 md:grid-cols-2">
-          <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E3E5EC] bg-white px-3 py-1 font-mono text-[11px] tracking-wide text-[#6B7280]">
-              FOR TEAMS WHO SHIP
-            </span>
-            <h1 className="mt-5 font-[family-name:var(--font-display)] text-[38px] font-semibold leading-[1.1] tracking-tight md:text-[48px]">
-              The board that keeps itself tidy.
-            </h1>
-            <p className="mt-5 max-w-[440px] text-[15.5px] leading-relaxed text-[#6B7280]">
-              Flowdeck turns scattered tasks into workspaces, boards, and lists your
-              team actually keeps up to date \u2014 because staying organized takes one
-              drag, not ten meetings.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link
-                href="/signup"
-                className="flex items-center gap-1.5 rounded-full bg-[#4C5FD5] px-5 py-3 text-[14px] font-medium text-white transition-colors hover:bg-[#3E4EC0]"
-              >
-                Start for free
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a
-                href="#how-it-works"
-                className="rounded-full border border-[#E3E5EC] bg-white px-5 py-3 text-[14px] font-medium text-[#171A21] transition-colors hover:border-[#D3D7E3]"
-              >
-                See how it works
-              </a>
-            </div>
-            <p className="mt-4 text-[12.5px] text-[#B0B4C0]">No credit card required.</p>
-          </div>
+      {/* ═══ HERO ═════════════════════════════════════════════════════════ */}
+      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#080B14] px-5 pt-24 pb-0 sm:px-8">
+        {/* Subtle grain texture */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.035]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundRepeat: 'repeat', backgroundSize: '180px' }} />
 
-          <LivingBoard />
+        {/* Radial glow spots */}
+        <div className="pointer-events-none absolute left-[20%] top-[25%] h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4C5FD5] opacity-[0.13] blur-[130px]" />
+        <div className="pointer-events-none absolute right-[15%] top-[40%] h-[400px] w-[400px] rounded-full bg-[#17C3B2] opacity-[0.08] blur-[110px]" />
+
+        {/* Eyebrow */}
+        <div className="relative z-10 mb-7 flex items-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.05] px-4 py-1.5 text-[12px] font-medium text-white/50 backdrop-blur-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#17C3B2] animate-pulse" />
+            Real-time collaboration for teams of every size
+            <span className="ml-1 text-[#4C5FD5]/80">→</span>
+          </span>
+        </div>
+
+        {/* Headline */}
+        <h1 className="relative z-10 mx-auto max-w-[900px] text-center font-[family-name:var(--font-display)] text-[44px] font-extrabold leading-[1.04] tracking-[-0.03em] text-white sm:text-[62px] md:text-[76px]">
+          Ship faster.<br />
+          <span className="text-[#4C5FD5]">Stay in sync.</span>
+        </h1>
+
+        {/* Subheading */}
+        <p className="relative z-10 mx-auto mt-6 max-w-[520px] text-center text-[16px] leading-relaxed text-white/40 sm:text-[17px]">
+          TaskSync gives your team a shared space to plan, track, and deliver work — with every change reflected live across all members.
+        </p>
+
+        {/* CTAs */}
+        <div className="relative z-10 mt-9 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/signup"
+            className="group flex items-center gap-2 rounded-xl bg-[#4C5FD5] px-6 py-3.5 text-[14px] font-semibold text-white shadow-[0_0_0_1px_rgba(76,95,213,0.3),0_8px_30px_rgba(76,95,213,0.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_0_0_1px_rgba(76,95,213,0.4),0_16px_40px_rgba(76,95,213,0.45)]"
+          >
+            Start for free
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+          <a
+            href="#how-it-works"
+            className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-6 py-3.5 text-[14px] font-semibold text-white/70 backdrop-blur-sm transition-all hover:border-white/[0.12] hover:bg-white/[0.07] hover:text-white"
+          >
+            See how it works
+          </a>
+        </div>
+
+        {/* Social proof */}
+        <p className="relative z-10 mt-5 text-[12.5px] text-white/20">
+          No credit card required &middot; Free plan forever
+        </p>
+
+        {/* App window */}
+        <div className="relative z-10 mt-14 w-full max-w-[1100px]">
+          <AppWindow />
+          {/* Bottom fade to white */}
+          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
         </div>
       </section>
 
-      {/* ---------- Features ---------- */}
-      <section id="features" className="px-6 py-20">
-        <div className="mx-auto max-w-[1160px]">
-          <div className="mb-12 max-w-[540px]">
-            <span className="font-mono text-[11px] tracking-wide text-[#4C5FD5]">
-              BUILT FOR THE DAILY GRIND
-            </span>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-[28px] font-semibold tracking-tight md:text-[32px]">
-              Everything a real workflow needs, nothing it doesn't.
+      {/* ═══ LOGO MARQUEE ═════════════════════════════════════════════════ */}
+      <section className="border-y border-[#F2F4F7] bg-white py-6">
+        <p className="mb-4 text-center text-[11px] font-semibold uppercase tracking-[0.1em] text-[#98A2B3]">
+          Trusted by product teams at
+        </p>
+        <Marquee />
+      </section>
+
+      {/* ═══ FEATURES ═════════════════════════════════════════════════════ */}
+      <section id="features" className="px-5 py-28 sm:px-8">
+        <div className="mx-auto max-w-[1200px]">
+          {/* Header */}
+          <div className="mx-auto mb-16 max-w-[600px] text-center">
+            <p className="mb-3 text-[12px] font-bold uppercase tracking-[0.12em] text-[#4C5FD5]">Why teams choose TaskSync</p>
+            <h2 className="font-[family-name:var(--font-display)] text-[36px] font-extrabold leading-tight tracking-tight text-[#101828] md:text-[44px]">
+              Built for the way
+              <br />teams actually work.
             </h2>
+            <p className="mt-4 text-[15.5px] leading-relaxed text-[#667085]">
+              No bloat. No complex setup. Just the essential tools to capture, organize, and ship work—together.
+            </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f) => (
+          {/* Feature grid */}
+          <div className="grid gap-px overflow-hidden rounded-3xl border border-[#EAECF0] bg-[#EAECF0] sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map((f, i) => (
               <div
                 key={f.title}
-                className="rounded-2xl border border-[#E3E5EC] bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-[#D3D7E3] hover:shadow-[0_8px_20px_rgba(23,26,33,0.06)]"
+                className="group relative flex flex-col bg-white p-8 transition-colors duration-200 hover:bg-[#FAFAFA]"
               >
+                <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-none"
+                  style={{ background: `radial-gradient(circle at 0% 0%, ${f.accent}06 0%, transparent 60%)` }} />
                 <span
-                  className="flex h-10 w-10 items-center justify-center rounded-xl"
-                  style={{ backgroundColor: `${f.accent}1A`, color: f.accent }}
+                  className="relative mb-5 flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
+                  style={{ background: `${f.accent}12`, color: f.accent }}
                 >
                   <f.icon className="h-5 w-5" />
                 </span>
-                <h3 className="mt-4 text-[15px] font-semibold text-[#171A21]">{f.title}</h3>
-                <p className="mt-1.5 text-[13.5px] leading-relaxed text-[#6B7280]">{f.desc}</p>
+                <h3 className="relative text-[16px] font-bold text-[#101828]">{f.title}</h3>
+                <p className="relative mt-2 text-[13.5px] leading-relaxed text-[#667085]">{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ---------- How it works ---------- */}
-      <section id="how-it-works" className="px-6 py-20">
-        <div className="mx-auto max-w-[1160px]">
-          <div className="mb-14 max-w-[540px]">
-            <span className="font-mono text-[11px] tracking-wide text-[#4C5FD5]">
-              THREE STEPS, EVERY TIME
-            </span>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-[28px] font-semibold tracking-tight md:text-[32px]">
-              From scattered to sorted.
+      {/* ═══ HOW IT WORKS ═════════════════════════════════════════════════ */}
+      <section id="how-it-works" className="bg-[#F9FAFB] px-5 py-28 sm:px-8">
+        <div className="mx-auto max-w-[1200px]">
+          <div className="mx-auto mb-16 max-w-[560px] text-center">
+            <p className="mb-3 text-[12px] font-bold uppercase tracking-[0.12em] text-[#4C5FD5]">Process</p>
+            <h2 className="font-[family-name:var(--font-display)] text-[36px] font-extrabold leading-tight tracking-tight text-[#101828] md:text-[44px]">
+              From idea to shipped<br />in three steps.
             </h2>
           </div>
 
-          <div className="grid gap-10 md:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-3">
             {STEPS.map((s, i) => (
-              <div key={s.n} className="relative">
-                {i < STEPS.length - 1 && (
-                  <span className="absolute right-[-20px] top-4 hidden h-px w-10 bg-[#D3D7E3] md:block" />
-                )}
-                <span className="font-mono text-[13px] font-medium text-[#B0B4C0]">{s.n}</span>
-                <h3 className="mt-2 text-[17px] font-semibold text-[#171A21]">{s.title}</h3>
-                <p className="mt-2 text-[13.5px] leading-relaxed text-[#6B7280]">{s.desc}</p>
+              <div key={s.n} className="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-[0_1px_2px_rgba(16,24,40,0.05)] ring-1 ring-[#EAECF0] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(16,24,40,0.08)]">
+                <div className="mb-6 flex items-center gap-3">
+                  <span className="font-[family-name:var(--font-display)] text-[48px] font-black leading-none text-[#F2F4F7] transition-colors duration-300 group-hover:text-[#EEF0FD]">
+                    {s.n}
+                  </span>
+                </div>
+                <h3 className="text-[19px] font-bold text-[#101828]">{s.title}</h3>
+                <p className="mt-2.5 text-[14px] leading-relaxed text-[#667085]">{s.desc}</p>
+                <div className="absolute bottom-0 left-0 h-0.5 w-full origin-left scale-x-0 bg-[#4C5FD5] transition-transform duration-500 group-hover:scale-x-100" />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ---------- Testimonials ---------- */}
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-[720px] text-center">
-          <span className="font-mono text-[11px] tracking-wide text-[#4C5FD5]">WHAT TEAMS SAY</span>
-          <h2 className="mt-3 font-[family-name:var(--font-display)] text-[28px] font-semibold tracking-tight md:text-[32px]">
-            Boards people actually keep updated.
-          </h2>
+      {/* ═══ TESTIMONIALS ════════════════════════════════════════════════ */}
+      <section className="overflow-hidden px-5 py-28 sm:px-8">
+        <div className="mx-auto max-w-[1200px]">
+          <div className="mx-auto mb-14 max-w-[520px] text-center">
+            <p className="mb-3 text-[12px] font-bold uppercase tracking-[0.12em] text-[#4C5FD5]">Testimonials</p>
+            <h2 className="font-[family-name:var(--font-display)] text-[36px] font-extrabold leading-tight tracking-tight text-[#101828] md:text-[44px]">
+              What teams are saying.
+            </h2>
+          </div>
 
-          <div className="relative mt-10 rounded-2xl border border-[#E3E5EC] bg-white p-8 shadow-[0_8px_20px_rgba(23,26,33,0.05)] md:p-10">
-            <Quote className="mx-auto h-6 w-6 text-[#D3D7E3]" />
-            <p className="mt-4 text-[16px] leading-relaxed text-[#171A21] md:text-[18px]">
-              {TESTIMONIALS[tIndex].quote}
-            </p>
-            <p className="mt-5 text-[13.5px] font-semibold text-[#171A21]">
-              {TESTIMONIALS[tIndex].name}
-              <span className="ml-1.5 font-normal text-[#6B7280]">
-                &middot; {TESTIMONIALS[tIndex].role}
-              </span>
-            </p>
+          <div className="grid gap-5 md:grid-cols-3">
+            {TESTIMONIALS.map((t, i) => {
+              const featured = i === 1;
+              return (
+                <div
+                  key={i}
+                  className={`flex flex-col rounded-2xl p-7 transition-all duration-300 ${
+                    featured
+                      ? 'bg-[#101828] text-white shadow-[0_20px_60px_rgba(16,24,40,0.3)] md:-mt-3 md:mb-3'
+                      : 'bg-[#F9FAFB] ring-1 ring-[#EAECF0]'
+                  }`}
+                >
+                  {/* Stars */}
+                  <div className="mb-5 flex gap-0.5">
+                    {[...Array(5)].map((_, si) => (
+                      <Star key={si} className={`h-4 w-4 fill-current ${featured ? 'text-[#E8A33D]' : 'text-[#E8A33D]'}`} />
+                    ))}
+                  </div>
 
-            <div className="mt-7 flex items-center justify-center gap-4">
-              <button
-                onClick={prevTestimonial}
-                aria-label="Previous testimonial"
-                className="rounded-full border border-[#E3E5EC] p-2 text-[#6B7280] transition-colors hover:border-[#D3D7E3] hover:text-[#171A21]"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <div className="flex items-center gap-1.5">
-                {TESTIMONIALS.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setTIndex(i)}
-                    aria-label={`Go to testimonial ${i + 1}`}
-                    className={`h-1.5 rounded-full transition-all ${
-                      i === tIndex ? 'w-5 bg-[#4C5FD5]' : 'w-1.5 bg-[#D3D7E3]'
-                    }`}
-                  />
-                ))}
-              </div>
-              <button
-                onClick={nextTestimonial}
-                aria-label="Next testimonial"
-                className="rounded-full border border-[#E3E5EC] p-2 text-[#6B7280] transition-colors hover:border-[#D3D7E3] hover:text-[#171A21]"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
+                  <p className={`flex-1 text-[14.5px] leading-relaxed ${featured ? 'text-white/80' : 'text-[#344054]'}`}>
+                    "{t.quote}"
+                  </p>
+
+                  <div className={`mt-6 flex items-center gap-3 border-t pt-5 ${featured ? 'border-white/10' : 'border-[#EAECF0]'}`}>
+                    <span
+                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+                      style={{ background: ['#17C3B2', '#4C5FD5', '#E8A33D'][i] }}
+                    >
+                      {t.name.split(' ').map(n => n[0]).join('')}
+                    </span>
+                    <div>
+                      <p className={`text-[13.5px] font-bold ${featured ? 'text-white' : 'text-[#101828]'}`}>{t.name}</p>
+                      <p className={`text-[12px] ${featured ? 'text-white/40' : 'text-[#98A2B3]'}`}>{t.role}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* ---------- Pricing ---------- */}
-      <section id="pricing" className="px-6 py-20">
-        <div className="mx-auto max-w-[1160px]">
-          <div className="mb-12 text-center">
-            <span className="font-mono text-[11px] tracking-wide text-[#4C5FD5]">PRICING</span>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-[28px] font-semibold tracking-tight md:text-[32px]">
-              Start free. Upgrade when your team does.
+      {/* ═══ PRICING ══════════════════════════════════════════════════════ */}
+      <section id="pricing" className="bg-[#F9FAFB] px-5 py-28 sm:px-8">
+        <div className="mx-auto max-w-[1200px]">
+          <div className="mx-auto mb-14 max-w-[520px] text-center">
+            <p className="mb-3 text-[12px] font-bold uppercase tracking-[0.12em] text-[#4C5FD5]">Pricing</p>
+            <h2 className="font-[family-name:var(--font-display)] text-[36px] font-extrabold leading-tight tracking-tight text-[#101828] md:text-[44px]">
+              Simple, honest pricing.
             </h2>
+            <p className="mt-4 text-[15.5px] text-[#667085]">No contracts. No hidden fees. Upgrade or downgrade anytime.</p>
           </div>
 
-          <div className="mx-auto grid max-w-[720px] gap-5 sm:grid-cols-2">
-            <div className="rounded-2xl border border-[#E3E5EC] bg-white p-7">
-              <h3 className="text-[15px] font-semibold text-[#171A21]">Free</h3>
-              <p className="mt-1 text-[13px] text-[#6B7280]">For individuals and small projects.</p>
-              <p className="mt-5 text-[32px] font-semibold text-[#171A21]">
-                $0<span className="text-[14px] font-normal text-[#6B7280]">/month</span>
-              </p>
-              <ul className="mt-6 flex flex-col gap-2.5">
-                {['Unlimited boards', 'Unlimited cards', '1 workspace', 'Core drag-and-drop'].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-[13.5px] text-[#171A21]">
-                    <Check className="h-4 w-4 flex-shrink-0 text-[#17C3B2]" />
-                    {item}
+          <div className="mx-auto grid max-w-[880px] gap-5 sm:grid-cols-2">
+            {/* Free */}
+            <div className="flex flex-col rounded-2xl bg-white p-8 ring-1 ring-[#EAECF0]">
+              <p className="text-[12px] font-bold uppercase tracking-widest text-[#98A2B3]">Free</p>
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="font-[family-name:var(--font-display)] text-[52px] font-black leading-none text-[#101828]">$0</span>
+                <span className="text-[14px] text-[#98A2B3]">/month</span>
+              </div>
+              <p className="mt-2 text-[13.5px] text-[#667085]">For individuals and small teams getting started.</p>
+
+              <ul className="mt-8 flex flex-col gap-3.5">
+                {['Unlimited boards & cards', '1 workspace', 'Core drag-and-drop', 'Due date tracking', 'Up to 3 members'].map(item => (
+                  <li key={item} className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#ECFDF3]">
+                      <Check className="h-3 w-3 text-[#12B76A]" />
+                    </span>
+                    <span className="text-[13.5px] text-[#344054]">{item}</span>
                   </li>
                 ))}
               </ul>
-              <Link
-                href="/signup"
-                className="mt-7 block rounded-full border border-[#E3E5EC] py-2.5 text-center text-[13.5px] font-medium text-[#171A21] transition-colors hover:border-[#D3D7E3]"
-              >
-                Start for free
+
+              <Link href="/signup" className="mt-auto pt-8 block rounded-xl border border-[#D0D5DD] py-3 text-center text-[14px] font-semibold text-[#344054] transition-all hover:border-[#98A2B3] hover:bg-[#F9FAFB]">
+                Get started free
               </Link>
             </div>
 
-            <div className="relative rounded-2xl border-2 border-[#4C5FD5] bg-white p-7">
-              <span className="absolute -top-3 left-7 rounded-full bg-[#4C5FD5] px-2.5 py-0.5 text-[11px] font-medium text-white">
+            {/* Team */}
+            <div className="relative flex flex-col rounded-2xl bg-[#101828] p-8 shadow-[0_24px_60px_rgba(16,24,40,0.25)]">
+              <span className="absolute -top-3.5 left-8 rounded-full bg-[#4C5FD5] px-3 py-1 text-[11px] font-bold text-white shadow-[0_4px_12px_rgba(76,95,213,0.4)]">
                 Most popular
               </span>
-              <h3 className="text-[15px] font-semibold text-[#171A21]">Team</h3>
-              <p className="mt-1 text-[13px] text-[#6B7280]">For teams working across workspaces.</p>
-              <p className="mt-5 text-[32px] font-semibold text-[#171A21]">
-                $8<span className="text-[14px] font-normal text-[#6B7280]">/month</span>
-              </p>
-              <ul className="mt-6 flex flex-col gap-2.5">
-                {['Everything in Free', 'Unlimited workspaces', 'Invite unlimited members', 'Priority support'].map(
-                  (item) => (
-                    <li key={item} className="flex items-center gap-2 text-[13.5px] text-[#171A21]">
-                      <Check className="h-4 w-4 flex-shrink-0 text-[#17C3B2]" />
-                      {item}
-                    </li>
-                  )
-                )}
+              <p className="text-[12px] font-bold uppercase tracking-widest text-white/30">Team</p>
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="font-[family-name:var(--font-display)] text-[52px] font-black leading-none text-white">$8</span>
+                <span className="text-[14px] text-white/30">/member/month</span>
+              </div>
+              <p className="mt-2 text-[13.5px] text-white/50">Everything you need to run multiple teams and projects.</p>
+
+              <ul className="mt-8 flex flex-col gap-3.5">
+                {['Everything in Free', 'Unlimited workspaces', 'Unlimited team members', 'Role-based permissions', 'Priority support & SLA'].map(item => (
+                  <li key={item} className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#4C5FD5]/20">
+                      <Check className="h-3 w-3 text-[#4C5FD5]" />
+                    </span>
+                    <span className="text-[13.5px] text-white/70">{item}</span>
+                  </li>
+                ))}
               </ul>
-              <Link
-                href="/signup"
-                className="mt-7 block rounded-full bg-[#4C5FD5] py-2.5 text-center text-[13.5px] font-medium text-white transition-colors hover:bg-[#3E4EC0]"
-              >
-                Start free trial
+
+              <Link href="/signup" className="mt-auto pt-8 block rounded-xl bg-[#4C5FD5] py-3 text-center text-[14px] font-semibold text-white shadow-[0_4px_16px_rgba(76,95,213,0.4)] transition-all hover:bg-[#3E4EC0] hover:shadow-[0_8px_24px_rgba(76,95,213,0.5)]">
+                Start 14-day free trial →
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ---------- FAQ ---------- */}
-      <section id="faq" className="px-6 py-20">
+      {/* ═══ FAQ ══════════════════════════════════════════════════════════ */}
+      <section id="faq" className="px-5 py-28 sm:px-8">
         <div className="mx-auto max-w-[720px]">
-          <div className="mb-10 text-center">
-            <span className="font-mono text-[11px] tracking-wide text-[#4C5FD5]">FAQ</span>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-[28px] font-semibold tracking-tight md:text-[32px]">
-              Questions, answered.
+          <div className="mb-12 text-center">
+            <p className="mb-3 text-[12px] font-bold uppercase tracking-[0.12em] text-[#4C5FD5]">FAQ</p>
+            <h2 className="font-[family-name:var(--font-display)] text-[36px] font-extrabold leading-tight tracking-tight text-[#101828] md:text-[44px]">
+              Got questions?
             </h2>
           </div>
-
           <div className="flex flex-col gap-3">
-            {FAQS.map((item) => (
-              <details
-                key={item.q}
-                className="group rounded-xl border border-[#E3E5EC] bg-white px-5 py-4 [&_summary::-webkit-details-marker]:hidden"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between text-[14px] font-medium text-[#171A21]">
-                  {item.q}
-                  <span className="ml-4 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-[#E3E5EC] text-[13px] text-[#6B7280] transition-transform group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <p className="mt-3 text-[13.5px] leading-relaxed text-[#6B7280]">{item.a}</p>
-              </details>
-            ))}
+            {FAQS.map(item => <FAQ key={item.q} q={item.q} a={item.a} />)}
           </div>
         </div>
       </section>
 
-      {/* ---------- Final CTA ---------- */}
-      <section className="px-6 pb-20">
-        <div className="mx-auto max-w-[1160px] rounded-3xl bg-[#4C5FD5] px-8 py-14 text-center md:py-16">
-          <h2 className="font-[family-name:var(--font-display)] text-[28px] font-semibold tracking-tight text-white md:text-[34px]">
-            Your next board is one click away.
-          </h2>
-          <p className="mx-auto mt-3 max-w-[440px] text-[14.5px] text-white/80">
-            Free to start. No credit card, no setup call, no waiting.
-          </p>
-          <Link
-            href="/signup"
-            className="mt-7 inline-flex items-center gap-1.5 rounded-full bg-white px-6 py-3 text-[14px] font-medium text-[#4C5FD5] transition-colors hover:bg-white/90"
-          >
-            Start for free
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+      {/* ═══ FINAL CTA ════════════════════════════════════════════════════ */}
+      <section className="px-5 pb-28 sm:px-8">
+        <div className="relative mx-auto max-w-[1200px] overflow-hidden rounded-3xl bg-[#080B14] px-8 py-24 text-center">
+          {/* Grain */}
+          <div className="pointer-events-none absolute inset-0 opacity-[0.04]"
+            style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '180px' }} />
+          {/* Glow */}
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4C5FD5] opacity-[0.15] blur-[120px]" />
+
+          <div className="relative">
+            <p className="mb-5 text-[12px] font-bold uppercase tracking-[0.12em] text-[#4C5FD5]">Get started today</p>
+            <h2 className="mx-auto max-w-[660px] font-[family-name:var(--font-display)] text-[38px] font-extrabold leading-tight tracking-tight text-white md:text-[52px]">
+              Your next board is<br />one click away.
+            </h2>
+            <p className="mx-auto mt-5 max-w-[440px] text-[15.5px] leading-relaxed text-white/35">
+              Free to start. No credit card. No setup call. No waiting. Just your team, moving faster.
+            </p>
+
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+              <Link href="/signup" className="group inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-[14px] font-bold text-[#101828] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(255,255,255,0.15)]">
+                Start for free
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link href="/login" className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-7 py-3.5 text-[14px] font-semibold text-white/60 backdrop-blur-sm transition-all hover:border-white/[0.12] hover:text-white">
+                Log in to your account
+              </Link>
+            </div>
+
+            <p className="mt-5 text-[12px] text-white/20">
+              Joining 40,000+ teams · No credit card required · Cancel anytime
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* ---------- Footer ---------- */}
-      <footer className="border-t border-[#E3E5EC] px-6 py-10">
-        <div className="mx-auto flex max-w-[1160px] flex-col items-center justify-between gap-6 md:flex-row">
-          <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#4C5FD5] text-white">
-              <LayoutGrid className="h-3.5 w-3.5" />
-            </span>
-            <span className="font-[family-name:var(--font-display)] text-[14.5px] font-semibold">
-              Flowdeck
-            </span>
-          </div>
-          <div className="flex items-center gap-6 text-[13px] text-[#6B7280]">
-            <a href="#features" className="hover:text-[#171A21]">
-              Features
-            </a>
-            <a href="#pricing" className="hover:text-[#171A21]">
-              Pricing
-            </a>
-            <Link href="/login" className="hover:text-[#171A21]">
-              Log in
+      {/* ═══ FOOTER ═══════════════════════════════════════════════════════ */}
+      <footer className="border-t border-[#F2F4F7] bg-white px-5 py-12 sm:px-8">
+        <div className="mx-auto max-w-[1200px]">
+          <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
+            <Link href="/" className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#4C5FD5]">
+                <Kanban className="h-4 w-4 text-white" />
+              </span>
+              <span className="font-[family-name:var(--font-display)] text-[15px] font-bold text-[#101828]">TaskSync</span>
             </Link>
+            <div className="flex items-center gap-6">
+              {[...NAV_LINKS, { label: 'Log in', href: '/login' }].map(l => (
+                <a key={l.label} href={l.href} className="text-[13px] font-medium text-[#667085] transition-colors hover:text-[#344054]">
+                  {l.label}
+                </a>
+              ))}
+            </div>
+            <p className="text-[12.5px] text-[#98A2B3]">© {new Date().getFullYear()} TaskSync, Inc.</p>
           </div>
-          <p className="text-[12.5px] text-[#B0B4C0]">&copy; {new Date().getFullYear()} Flowdeck.</p>
         </div>
       </footer>
+
     </main>
   );
 }

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import {
@@ -72,7 +72,7 @@ export default function NotificationsPage() {
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-[family-name:var(--font-display)] text-[26px] font-bold text-[#171A21] tracking-tight">
+            <h1 className="font-[family-name:var(--font-display)] text-[26px] font-bold text-[#101828] tracking-tight">
               Notifications
             </h1>
             {unreadNotifications.length > 0 && (
@@ -81,7 +81,7 @@ export default function NotificationsPage() {
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-[13.5px] text-[#6B7280]">
+          <p className="mt-0.5 text-[13.5px] text-[#667085]">
             Stay updated with workspace invites, task updates, and team mentions in real time.
           </p>
         </div>
@@ -90,7 +90,7 @@ export default function NotificationsPage() {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-1.5 rounded-xl border border-[#E3E5EC] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#171A21] shadow-xs hover:border-[#4C5FD5] hover:text-[#4C5FD5] transition-all disabled:opacity-60"
+            className="flex items-center gap-1.5 rounded-xl border border-[#EAECF0] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#101828] shadow-xs hover:border-[#4C5FD5] hover:text-[#4C5FD5] transition-all disabled:opacity-60"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
             Refresh
@@ -99,20 +99,20 @@ export default function NotificationsPage() {
       </div>
 
       {/* Filter Tabs Bar */}
-      <div className="mb-6 flex items-center justify-between border-b border-[#E3E5EC] pb-3">
+      <div className="mb-6 flex items-center justify-between border-b border-[#EAECF0] pb-3">
         <div className="flex items-center gap-1.5 overflow-x-auto">
           <button
             onClick={() => setFilter('all')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-[13px] font-semibold transition-all ${
               filter === 'all'
                 ? 'bg-[#4C5FD5] text-white shadow-xs'
-                : 'bg-white border border-[#E3E5EC] text-[#6B7280] hover:border-[#D3D7E3] hover:text-[#171A21]'
+                : 'bg-white border border-[#EAECF0] text-[#667085] hover:border-[#D0D5DD] hover:text-[#101828]'
             }`}
           >
             All
             <span
               className={`rounded-full px-1.5 py-0.2 text-[11px] ${
-                filter === 'all' ? 'bg-white/20 text-white' : 'bg-[#F0F2F7] text-[#6B7280]'
+                filter === 'all' ? 'bg-white/20 text-white' : 'bg-[#F2F4F7] text-[#667085]'
               }`}
             >
               {notifications.length}
@@ -124,13 +124,13 @@ export default function NotificationsPage() {
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-[13px] font-semibold transition-all ${
               filter === 'unread'
                 ? 'bg-[#4C5FD5] text-white shadow-xs'
-                : 'bg-white border border-[#E3E5EC] text-[#6B7280] hover:border-[#D3D7E3] hover:text-[#171A21]'
+                : 'bg-white border border-[#EAECF0] text-[#667085] hover:border-[#D0D5DD] hover:text-[#101828]'
             }`}
           >
             Unread
             <span
               className={`rounded-full px-1.5 py-0.2 text-[11px] ${
-                filter === 'unread' ? 'bg-white/20 text-white' : 'bg-[#F0F2F7] text-[#6B7280]'
+                filter === 'unread' ? 'bg-white/20 text-white' : 'bg-[#F2F4F7] text-[#667085]'
               }`}
             >
               {unreadNotifications.length}
@@ -142,14 +142,14 @@ export default function NotificationsPage() {
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-[13px] font-semibold transition-all ${
               filter === 'invitations'
                 ? 'bg-[#4C5FD5] text-white shadow-xs'
-                : 'bg-white border border-[#E3E5EC] text-[#6B7280] hover:border-[#D3D7E3] hover:text-[#171A21]'
+                : 'bg-white border border-[#EAECF0] text-[#667085] hover:border-[#D0D5DD] hover:text-[#101828]'
             }`}
           >
             <Users className="h-3.5 w-3.5" />
             Invitations
             <span
               className={`rounded-full px-1.5 py-0.2 text-[11px] ${
-                filter === 'invitations' ? 'bg-white/20 text-white' : 'bg-[#F0F2F7] text-[#6B7280]'
+                filter === 'invitations' ? 'bg-white/20 text-white' : 'bg-[#F2F4F7] text-[#667085]'
               }`}
             >
               {invitationNotifications.length}
@@ -157,7 +157,7 @@ export default function NotificationsPage() {
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 text-[12px] text-[#8E95A5]">
+        <div className="hidden sm:flex items-center gap-2 text-[12px] text-[#98A2B3]">
           <span
             className={`h-2 w-2 rounded-full ${
               isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'
@@ -169,18 +169,18 @@ export default function NotificationsPage() {
 
       {/* Notifications List */}
       {filteredList.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-[#D3D7E3] bg-white px-6 py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-[#D0D5DD] bg-white px-6 py-16 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF0FD] text-[#4C5FD5]">
             <Inbox className="h-6 w-6" />
           </div>
-          <h3 className="mt-4 text-[16px] font-semibold text-[#171A21]">
+          <h3 className="mt-4 text-[16px] font-semibold text-[#101828]">
             {filter === 'unread'
               ? 'No unread notifications'
               : filter === 'invitations'
               ? 'No pending invitations'
               : 'You have no notifications'}
           </h3>
-          <p className="mt-1 text-[13px] text-[#6B7280] max-w-sm">
+          <p className="mt-1 text-[13px] text-[#667085] max-w-sm">
             {filter === 'unread'
               ? "You're all caught up with everything!"
               : filter === 'invitations'
@@ -200,7 +200,7 @@ export default function NotificationsPage() {
                 className={`group relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border p-5 transition-all duration-200 ${
                   !notif.isRead
                     ? 'border-[#4C5FD5]/30 bg-white shadow-xs ring-1 ring-[#4C5FD5]/10'
-                    : 'border-[#E3E5EC] bg-white hover:border-[#D3D7E3]'
+                    : 'border-[#EAECF0] bg-white hover:border-[#D0D5DD]'
                 }`}
               >
                 <div className="flex items-start gap-4">
@@ -208,7 +208,7 @@ export default function NotificationsPage() {
                     className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${
                       isInvite
                         ? 'bg-[#EEF0FD] text-[#4C5FD5]'
-                        : 'bg-[#F0F2F7] text-[#6B7280]'
+                        : 'bg-[#F2F4F7] text-[#667085]'
                     }`}
                   >
                     {isInvite ? <Users className="h-5 w-5" /> : <Mail className="h-5 w-5" />}
@@ -216,14 +216,14 @@ export default function NotificationsPage() {
 
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-[14.5px] text-[#171A21]">{notif.title}</h3>
+                      <h3 className="font-semibold text-[14.5px] text-[#101828]">{notif.title}</h3>
                       {!notif.isRead && (
                         <span className="h-2 w-2 rounded-full bg-[#4C5FD5] flex-shrink-0" />
                       )}
                     </div>
-                    <p className="text-[13.5px] text-[#6B7280] leading-relaxed">{notif.message}</p>
+                    <p className="text-[13.5px] text-[#667085] leading-relaxed">{notif.message}</p>
                     <div className="flex items-center gap-3 pt-1">
-                      <span className="flex items-center gap-1 text-[11.5px] text-[#8E95A5]">
+                      <span className="flex items-center gap-1 text-[11.5px] text-[#98A2B3]">
                         <Clock className="h-3 w-3" />
                         {new Date(notif.createdAt).toLocaleDateString(undefined, {
                           month: 'short',
@@ -265,7 +265,7 @@ export default function NotificationsPage() {
                       onClick={() =>
                         handleInviteResponse(notif.id, notif.invitationToken!, 'decline')
                       }
-                      className="flex items-center gap-1.5 rounded-xl border border-[#E3E5EC] bg-white px-4 py-2 text-[12.5px] font-semibold text-[#6B7280] transition-colors hover:border-[#C4453D] hover:text-[#C4453D]"
+                      className="flex items-center gap-1.5 rounded-xl border border-[#EAECF0] bg-white px-4 py-2 text-[12.5px] font-semibold text-[#667085] transition-colors hover:border-[#C4453D] hover:text-[#C4453D]"
                     >
                       <X className="h-3.5 w-3.5" />
                       Decline

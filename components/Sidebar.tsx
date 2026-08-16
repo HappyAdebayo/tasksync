@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -60,9 +60,9 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
     pathname.startsWith('/dashboard/workspaces') || pathname.startsWith('/dashboard/boards');
 
   const sidebarContent = (
-    <aside className="flex h-full w-60 flex-col border-r border-[#E3E5EC] bg-white select-none">
+    <aside className="flex h-full w-60 flex-col border-r border-[#EAECF0] bg-white select-none">
       {/* Brand Header */}
-      <div className="flex h-16 items-center justify-between border-b border-[#E3E5EC] px-5 flex-shrink-0">
+      <div className="flex h-16 items-center justify-between border-b border-[#EAECF0] px-5 flex-shrink-0">
         <Link href="/dashboard" className="flex items-center gap-2.5">
           <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#4C5FD5] to-[#3B4CB8] shadow-xs text-white">
             <Kanban className="h-4 w-4" />
@@ -73,7 +73,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
               title={isConnected ? 'Live WebSocket connected' : 'Connecting...'}
             />
           </span>
-          <span className="font-[family-name:var(--font-display)] text-[17px] font-bold tracking-tight text-[#171A21]">
+          <span className="font-[family-name:var(--font-display)] text-[17px] font-bold tracking-tight text-[#101828]">
             TaskSync
           </span>
         </Link>
@@ -82,7 +82,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
         <button
           onClick={onMobileClose}
           aria-label="Close menu"
-          className="lg:hidden flex h-8 w-8 items-center justify-center rounded-xl text-[#8E95A5] hover:bg-[#F6F7FB] hover:text-[#171A21] transition-colors"
+          className="lg:hidden flex h-8 w-8 items-center justify-center rounded-xl text-[#98A2B3] hover:bg-[#F9FAFB] hover:text-[#101828] transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -95,10 +95,10 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
           className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13.5px] font-medium transition-all ${
             isDashboardActive
               ? 'bg-[#EEF0FD] text-[#4C5FD5] font-semibold'
-              : 'text-[#6B7280] hover:bg-[#F6F7FB] hover:text-[#171A21]'
+              : 'text-[#667085] hover:bg-[#F9FAFB] hover:text-[#101828]'
           }`}
         >
-          <Home className={`h-4 w-4 flex-shrink-0 ${isDashboardActive ? 'text-[#4C5FD5]' : 'text-[#8E95A5]'}`} />
+          <Home className={`h-4 w-4 flex-shrink-0 ${isDashboardActive ? 'text-[#4C5FD5]' : 'text-[#98A2B3]'}`} />
           Dashboard
         </Link>
 
@@ -107,17 +107,17 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
           className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-[13.5px] font-medium transition-all ${
             isWorkspacesActive
               ? 'bg-[#EEF0FD] text-[#4C5FD5] font-semibold'
-              : 'text-[#6B7280] hover:bg-[#F6F7FB] hover:text-[#171A21]'
+              : 'text-[#667085] hover:bg-[#F9FAFB] hover:text-[#101828]'
           }`}
         >
           <div className="flex items-center gap-3">
-            <Folder className={`h-4 w-4 flex-shrink-0 ${isWorkspacesActive ? 'text-[#4C5FD5]' : 'text-[#8E95A5]'}`} />
+            <Folder className={`h-4 w-4 flex-shrink-0 ${isWorkspacesActive ? 'text-[#4C5FD5]' : 'text-[#98A2B3]'}`} />
             Workspaces
           </div>
           {workspaces.length > 0 && (
             <span
               className={`rounded-full px-2 py-0.5 text-[11px] font-semibold flex-shrink-0 ${
-                isWorkspacesActive ? 'bg-[#4C5FD5] text-white' : 'bg-[#F0F2F7] text-[#6B7280]'
+                isWorkspacesActive ? 'bg-[#4C5FD5] text-white' : 'bg-[#F2F4F7] text-[#667085]'
               }`}
             >
               {workspaces.length}
@@ -127,29 +127,29 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
       </nav>
 
       {/* User Profile Footer */}
-      <div className="border-t border-[#E3E5EC] p-3 bg-[#FAFAFC] flex-shrink-0">
+      <div className="border-t border-[#EAECF0] p-3 bg-[#F9FAFB] flex-shrink-0">
         <div className="relative">
           <button
             onClick={() => setProfileOpen((v) => !v)}
-            className="flex w-full items-center justify-between gap-2.5 rounded-xl border border-transparent p-2 text-left hover:border-[#E3E5EC] hover:bg-white transition-all"
+            className="flex w-full items-center justify-between gap-2.5 rounded-xl border border-transparent p-2 text-left hover:border-[#EAECF0] hover:bg-white transition-all"
           >
             <div className="flex min-w-0 items-center gap-2.5">
               <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#4C5FD5] to-[#7B8AF0] text-[12px] font-semibold text-white shadow-xs">
                 {userInitials}
               </span>
               <div className="min-w-0">
-                <p className="truncate text-[13px] font-semibold text-[#171A21]">{userName}</p>
-                <p className="truncate text-[11px] text-[#8E95A5]">{userEmail}</p>
+                <p className="truncate text-[13px] font-semibold text-[#101828]">{userName}</p>
+                <p className="truncate text-[11px] text-[#98A2B3]">{userEmail}</p>
               </div>
             </div>
-            <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-[#8E95A5] transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-[#98A2B3] transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {profileOpen && (
-            <div className="absolute bottom-full left-0 mb-2 w-full rounded-2xl border border-[#E3E5EC] bg-white p-1.5 shadow-[0_16px_36px_rgba(23,26,33,0.12)] animate-in fade-in zoom-in-95 duration-150 z-50">
-              <div className="px-3 py-2 border-b border-[#F0F2F7]">
-                <p className="text-[12px] font-semibold text-[#171A21]">{userName}</p>
-                <p className="text-[10.5px] text-[#8E95A5] truncate">{userEmail}</p>
+            <div className="absolute bottom-full left-0 mb-2 w-full rounded-2xl border border-[#EAECF0] bg-white p-1.5 shadow-[0_16px_36px_rgba(23,26,33,0.12)] animate-in fade-in zoom-in-95 duration-150 z-50">
+              <div className="px-3 py-2 border-b border-[#F2F4F7]">
+                <p className="text-[12px] font-semibold text-[#101828]">{userName}</p>
+                <p className="text-[10.5px] text-[#98A2B3] truncate">{userEmail}</p>
               </div>
               <button
                 onClick={handleLogout}

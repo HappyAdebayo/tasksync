@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { ChevronLeft } from 'lucide-react';
 import { useBoards } from '@/lib/board-utils';
@@ -16,17 +16,17 @@ export default function ProjectView({
 
   return (
     <section className="flex h-full flex-col">
-      <div className="flex flex-shrink-0 items-center gap-3 border-b border-[#E3E5EC] bg-white px-7 py-3.5">
+      <div className="flex flex-shrink-0 items-center gap-3 border-b border-[#EAECF0] bg-white px-7 py-3.5">
         <button
           onClick={onBack}
-          className="flex items-center gap-1 text-[13px] font-medium text-[#6B7280] transition-colors hover:text-[#4C5FD5]"
+          className="flex items-center gap-1 text-[13px] font-medium text-[#667085] transition-colors hover:text-[#4C5FD5]"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
           Boards
         </button>
-        <span className="h-4 w-px bg-[#E3E5EC]" />
+        <span className="h-4 w-px bg-[#EAECF0]" />
         <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: board?.accent }} />
-        <h1 className="text-[14.5px] font-semibold text-[#171A21]">{board?.name ?? 'Board'}</h1>
+        <h1 className="text-[14.5px] font-semibold text-[#101828]">{board?.name ?? 'Board'}</h1>
       </div>
 
       <div className="flex-1 overflow-hidden">

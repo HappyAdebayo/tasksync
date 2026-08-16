@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -46,35 +46,35 @@ export default function BoardDetailPage({
   const isReadOnly = workspace?.role === 'viewer';
 
   return (
-    <div className="flex h-full flex-col bg-[#F6F7FB]">
+    <div className="flex h-full flex-col bg-[#F9FAFB]">
       {/* Board Top Header Subbar */}
-      <header className="flex flex-shrink-0 items-center justify-between gap-2 sm:gap-4 border-b border-[#E3E5EC] bg-white px-4 py-3 sm:px-7">
+      <header className="flex flex-shrink-0 items-center justify-between gap-2 sm:gap-4 border-b border-[#EAECF0] bg-white px-4 py-3 sm:px-7">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           {/* Back — always show chevron, hide text on very small screens */}
           <Link
             href="/dashboard/workspaces"
-            className="flex items-center gap-1 text-[13px] font-medium text-[#6B7280] transition-colors hover:text-[#171A21] flex-shrink-0"
+            className="flex items-center gap-1 text-[13px] font-medium text-[#667085] transition-colors hover:text-[#101828] flex-shrink-0"
           >
             <ChevronLeft className="h-4 w-4" />
             <span className="hidden sm:inline">Workspaces</span>
           </Link>
-          <span className="text-[#D3D7E3] hidden sm:inline">/</span>
+          <span className="text-[#D0D5DD] hidden sm:inline">/</span>
           {workspace && (
             <>
               <Link
                 href={`/dashboard/workspaces?workspace=${workspace.id}`}
-                className="hidden sm:inline text-[13px] font-medium text-[#6B7280] hover:text-[#171A21] truncate max-w-[100px]"
+                className="hidden sm:inline text-[13px] font-medium text-[#667085] hover:text-[#101828] truncate max-w-[100px]"
               >
                 {workspace.name}
               </Link>
-              <span className="hidden sm:inline text-[#D3D7E3]">/</span>
+              <span className="hidden sm:inline text-[#D0D5DD]">/</span>
             </>
           )}
           <span
             className="h-2.5 w-2.5 flex-shrink-0 rounded-full shadow-xs"
             style={{ backgroundColor: currentBoard?.accent || '#4C5FD5' }}
           />
-          <h1 className="truncate font-[family-name:var(--font-display)] text-[15px] sm:text-[16px] font-bold text-[#171A21]">
+          <h1 className="truncate font-[family-name:var(--font-display)] text-[15px] sm:text-[16px] font-bold text-[#101828]">
             {currentBoard?.name ?? 'Board'}
           </h1>
 
@@ -102,7 +102,7 @@ export default function BoardDetailPage({
           {workspace?.role === 'owner' && (
             <button
               onClick={() => setInviteModalOpen(true)}
-              className="flex items-center gap-1.5 rounded-xl border border-[#E3E5EC] bg-white px-2.5 sm:px-3.5 py-1.5 text-[12.5px] font-semibold text-[#171A21] shadow-xs transition-all hover:border-[#4C5FD5] hover:text-[#4C5FD5]"
+              className="flex items-center gap-1.5 rounded-xl border border-[#EAECF0] bg-white px-2.5 sm:px-3.5 py-1.5 text-[12.5px] font-semibold text-[#101828] shadow-xs transition-all hover:border-[#4C5FD5] hover:text-[#4C5FD5]"
             >
               <UserPlus className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Invite</span>

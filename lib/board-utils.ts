@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react';
+﻿import { useEffect, useSyncExternalStore } from 'react';
 import { fetchBoardsApi, createBoardApi, deleteBoardApi } from './api';
 
 export type CardItem = {
@@ -46,7 +46,7 @@ export function dueDateTone(iso: string) {
 
   if (daysLeft < 0) return 'bg-[#FBEAE9] text-[#C4453D]'; // overdue
   if (daysLeft <= 2) return 'bg-[#FDF3E3] text-[#B4791F]'; // due soon
-  return 'bg-[#F1F2F6] text-[#6B7280]'; // later
+  return 'bg-[#F1F2F6] text-[#667085]'; // later
 }
 
 /**

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Plus, MoreVertical, Calendar, X, GripVertical, Trash2, MousePointer, Eye } from 'lucide-react';
@@ -54,7 +54,7 @@ type RemoteDragState = {
 function CardBody({ card }: { card: CardItem }) {
   return (
     <>
-      <p className="text-[13.5px] leading-snug text-[#171A21]">{card.title}</p>
+      <p className="text-[13.5px] leading-snug text-[#101828]">{card.title}</p>
       {card.dueDate && (
         <span
           className={`mt-2.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium ${dueDateTone(
@@ -114,12 +114,12 @@ function SortableCard({
           ? 'opacity-30 border-[#4C5FD5]'
           : isRemoteBeingDragged
           ? 'opacity-40 border-dashed border-indigo-400 bg-indigo-50/50'
-          : 'border-[#E3E5EC] shadow-[0_1px_2px_rgba(23,26,33,0.04)] hover:border-[#D3D7E3] hover:shadow-[0_6px_16px_rgba(23,26,33,0.08)]'
+          : 'border-[#EAECF0] shadow-[0_1px_2px_rgba(23,26,33,0.04)] hover:border-[#D0D5DD] hover:shadow-[0_6px_16px_rgba(23,26,33,0.08)]'
       }`}
     >
       {!readOnly && (
         <>
-          <GripVertical className="absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#D3D7E3] opacity-0 transition-opacity group-hover:opacity-100" />
+          <GripVertical className="absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#D0D5DD] opacity-0 transition-opacity group-hover:opacity-100" />
           <button
             onPointerDown={(e) => e.stopPropagation()}
             onClick={handleDeleteClick}
@@ -129,7 +129,7 @@ function SortableCard({
             className={`absolute right-2 top-2 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded transition-colors ${
               pendingDelete
                 ? 'bg-red-500 text-white opacity-100'
-                : 'text-[#D3D7E3] opacity-0 hover:bg-red-50 hover:text-red-500 group-hover:opacity-100'
+                : 'text-[#D0D5DD] opacity-0 hover:bg-red-50 hover:text-red-500 group-hover:opacity-100'
             }`}
           >
             <Trash2 className="h-3 w-3" />
@@ -167,7 +167,7 @@ function AddCardForm({ onAdd, onCancel }: { onAdd: (title: string) => void; onCa
           if (e.key === 'Escape') onCancel();
         }}
         placeholder="Enter a title for this card…"
-        className="w-full resize-none border-none text-[13.5px] text-[#171A21] outline-none placeholder:text-[#6B7280]"
+        className="w-full resize-none border-none text-[13.5px] text-[#101828] outline-none placeholder:text-[#667085]"
       />
       <div className="mt-1 flex items-center gap-2">
         <button
@@ -179,7 +179,7 @@ function AddCardForm({ onAdd, onCancel }: { onAdd: (title: string) => void; onCa
         <button
           onClick={onCancel}
           aria-label="Cancel"
-          className="rounded-lg p-1 text-[#6B7280] transition-colors hover:bg-[#F6F7FB] hover:text-[#171A21]"
+          className="rounded-lg p-1 text-[#667085] transition-colors hover:bg-[#F9FAFB] hover:text-[#101828]"
         >
           <X className="h-4 w-4" />
         </button>
@@ -234,7 +234,7 @@ function AddListColumn({
     return (
       <button
         onClick={() => setAdding(true)}
-        className="flex h-[44px] w-[260px] flex-shrink-0 items-center gap-2 rounded-2xl border border-dashed border-[#D3D7E3] bg-white/60 px-4 text-[13.5px] font-medium text-[#6B7280] transition-colors hover:border-[#4C5FD5] hover:bg-white hover:text-[#4C5FD5]"
+        className="flex h-[44px] w-[260px] flex-shrink-0 items-center gap-2 rounded-2xl border border-dashed border-[#D0D5DD] bg-white/60 px-4 text-[13.5px] font-medium text-[#667085] transition-colors hover:border-[#4C5FD5] hover:bg-white hover:text-[#4C5FD5]"
       >
         <Plus className="h-4 w-4" />
         Add another list
@@ -243,7 +243,7 @@ function AddListColumn({
   }
 
   return (
-    <div className="flex w-[260px] flex-shrink-0 flex-col gap-2 rounded-2xl border border-[#E3E5EC] bg-[#F6F7FB] p-3 shadow-xs">
+    <div className="flex w-[260px] flex-shrink-0 flex-col gap-2 rounded-2xl border border-[#EAECF0] bg-[#F9FAFB] p-3 shadow-xs">
       <input
         autoFocus
         value={title}
@@ -253,16 +253,16 @@ function AddListColumn({
           if (e.key === 'Escape') setAdding(false);
         }}
         placeholder="Enter list title…"
-        className="rounded-lg border border-[#E3E5EC] bg-white px-2.5 py-1.5 text-[13.5px] text-[#171A21] outline-none placeholder:text-[#6B7280] focus:border-[#4C5FD5]"
+        className="rounded-lg border border-[#EAECF0] bg-white px-2.5 py-1.5 text-[13.5px] text-[#101828] outline-none placeholder:text-[#667085] focus:border-[#4C5FD5]"
       />
 
       <div className="flex flex-col gap-1">
-        <label className="text-[11.5px] font-medium text-[#6B7280]">
-          List color <span className="font-normal text-[#8E95A5]">(hex code)</span>
+        <label className="text-[11.5px] font-medium text-[#667085]">
+          List color <span className="font-normal text-[#98A2B3]">(hex code)</span>
         </label>
         <div className="flex items-center gap-2">
           <span
-            className="h-6 w-6 flex-shrink-0 rounded-md border border-[#E3E5EC] shadow-xs"
+            className="h-6 w-6 flex-shrink-0 rounded-md border border-[#EAECF0] shadow-xs"
             style={{
               backgroundColor:
                 !invalidHex && colorInput.trim() ? colorInput.trim() : defaultColor,
@@ -279,10 +279,10 @@ function AddListColumn({
             }}
             placeholder="#4C5FD5"
             maxLength={7}
-            className={`w-full rounded-lg border bg-white px-2.5 py-1 text-[12.5px] font-mono text-[#171A21] outline-none transition-colors ${
+            className={`w-full rounded-lg border bg-white px-2.5 py-1 text-[12.5px] font-mono text-[#101828] outline-none transition-colors ${
               invalidHex
                 ? 'border-red-400 focus:border-red-500'
-                : 'border-[#E3E5EC] focus:border-[#4C5FD5]'
+                : 'border-[#EAECF0] focus:border-[#4C5FD5]'
             }`}
           />
         </div>
@@ -305,7 +305,7 @@ function AddListColumn({
             setInvalidHex(false);
           }}
           aria-label="Cancel"
-          className="rounded-lg p-1 text-[#6B7280] transition-colors hover:bg-white hover:text-[#171A21]"
+          className="rounded-lg p-1 text-[#667085] transition-colors hover:bg-white hover:text-[#101828]"
         >
           <X className="h-4 w-4" />
         </button>
@@ -360,7 +360,7 @@ function ListColumn({
   return (
     <div
       ref={setNodeRef}
-      className="flex w-[260px] flex-shrink-0 flex-col rounded-2xl border border-[#E3E5EC] bg-[#F6F7FB] shadow-xs"
+      className="flex w-[260px] flex-shrink-0 flex-col rounded-2xl border border-[#EAECF0] bg-[#F9FAFB] shadow-xs"
     >
       <div className="flex items-center justify-between p-3 pb-2">
         <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -382,21 +382,21 @@ function ListColumn({
                   setEditing(false);
                 }
               }}
-              className="w-full rounded border border-[#4C5FD5] bg-white px-1.5 py-0.5 text-[13.5px] font-semibold text-[#171A21] outline-none"
+              className="w-full rounded border border-[#4C5FD5] bg-white px-1.5 py-0.5 text-[13.5px] font-semibold text-[#101828] outline-none"
             />
           ) : (
             <button
               onClick={() => {
                 if (!readOnly) setEditing(true);
               }}
-              className={`truncate text-left font-[family-name:var(--font-display)] text-[14px] font-semibold text-[#171A21] ${
+              className={`truncate text-left font-[family-name:var(--font-display)] text-[14px] font-semibold text-[#101828] ${
                 readOnly ? 'cursor-default' : 'hover:text-[#4C5FD5]'
               }`}
             >
               {list.title}
             </button>
           )}
-          <span className="flex-shrink-0 rounded-full bg-white px-2 py-0.5 text-[11.5px] font-medium text-[#6B7280] shadow-xs">
+          <span className="flex-shrink-0 rounded-full bg-white px-2 py-0.5 text-[11.5px] font-medium text-[#667085] shadow-xs">
             {list.cards.length}
           </span>
         </div>
@@ -407,14 +407,14 @@ function ListColumn({
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={`List options for ${list.title}`}
               aria-expanded={menuOpen}
-              className="flex h-6 w-6 items-center justify-center rounded-lg text-[#6B7280] transition-colors hover:bg-white hover:text-[#171A21]"
+              className="flex h-6 w-6 items-center justify-center rounded-lg text-[#667085] transition-colors hover:bg-white hover:text-[#101828]"
             >
               <MoreVertical className="h-3.5 w-3.5" />
             </button>
             {menuOpen && (
               <div
                 role="menu"
-                className="absolute right-0 top-7 z-20 w-36 rounded-xl border border-[#E3E5EC] bg-white p-1 shadow-lg"
+                className="absolute right-0 top-7 z-20 w-36 rounded-xl border border-[#EAECF0] bg-white p-1 shadow-lg"
               >
                 <button
                   role="menuitem"
@@ -422,7 +422,7 @@ function ListColumn({
                     setMenuOpen(false);
                     setEditing(true);
                   }}
-                  className="flex w-full rounded-lg px-2.5 py-1.5 text-left text-[12.5px] text-[#171A21] hover:bg-[#F6F7FB]"
+                  className="flex w-full rounded-lg px-2.5 py-1.5 text-left text-[12.5px] text-[#101828] hover:bg-[#F9FAFB]"
                 >
                   Rename
                 </button>
@@ -471,7 +471,7 @@ function ListColumn({
           ) : (
             <button
               onClick={() => setAdding(true)}
-              className="flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] font-medium text-[#6B7280] transition-colors hover:bg-white hover:text-[#171A21]"
+              className="flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] font-medium text-[#667085] transition-colors hover:bg-white hover:text-[#101828]"
             >
               <Plus className="h-3.5 w-3.5" />
               Add card
@@ -991,7 +991,7 @@ export default function KanbanBoard({
             <MousePointer className="h-3 w-3 text-[#4C5FD5] animate-pulse ml-auto" />
           </div>
 
-          <p className="text-[12.5px] font-medium leading-snug text-[#171A21] line-clamp-2">
+          <p className="text-[12.5px] font-medium leading-snug text-[#101828] line-clamp-2">
             {drag.cardTitle}
           </p>
         </div>

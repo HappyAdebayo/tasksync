@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { X, Mail, Check } from 'lucide-react';
@@ -21,7 +21,7 @@ const initialMembers: Member[] = [
 const roleTone: Record<Member['role'], string> = {
   owner: 'bg-[#EEF0FD] text-[#4C5FD5]',
   editor: 'bg-[#E7F7F5] text-[#128A7D]',
-  viewer: 'bg-[#F1F2F6] text-[#6B7280]',
+  viewer: 'bg-[#F1F2F6] text-[#667085]',
 };
 
 export default function InviteModal({
@@ -66,7 +66,7 @@ export default function InviteModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#171A21]/40 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#101828]/40 px-4"
       onClick={onClose}
       onKeyDown={(e) => e.key === 'Escape' && onClose()}
     >
@@ -75,25 +75,25 @@ export default function InviteModal({
         aria-modal="true"
         aria-label={`Invite to ${workspaceName} board`}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-[420px] rounded-2xl border border-[#E3E5EC] bg-white shadow-[0_24px_48px_rgba(23,26,33,0.18)]"
+        className="w-full max-w-[420px] rounded-2xl border border-[#EAECF0] bg-white shadow-[0_24px_48px_rgba(23,26,33,0.18)]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#E3E5EC] px-5 py-4">
-          <h2 className="font-[family-name:var(--font-display)] text-[15.5px] font-semibold text-[#171A21]">
+        <div className="flex items-center justify-between border-b border-[#EAECF0] px-5 py-4">
+          <h2 className="font-[family-name:var(--font-display)] text-[15.5px] font-semibold text-[#101828]">
             Invite to &ldquo;{workspaceName}&rdquo; board
           </h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="rounded-md p-1 text-[#6B7280] transition-colors hover:bg-[#F6F7FB] hover:text-[#171A21]"
+            className="rounded-md p-1 text-[#667085] transition-colors hover:bg-[#F9FAFB] hover:text-[#101828]"
           >
             <X className="h-4.5 w-4.5" />
           </button>
         </div>
 
         {/* Send invite */}
-        <div className="border-b border-[#E3E5EC] px-5 py-4">
-          <label className="mb-1.5 block text-[12.5px] font-medium text-[#6B7280]" htmlFor="invite-email">
+        <div className="border-b border-[#EAECF0] px-5 py-4">
+          <label className="mb-1.5 block text-[12.5px] font-medium text-[#667085]" htmlFor="invite-email">
             Email address
           </label>
           <input
@@ -103,18 +103,18 @@ export default function InviteModal({
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="friend@email.com"
-            className="w-full rounded-lg border border-[#E3E5EC] px-3 py-2 text-[13.5px] text-[#171A21] outline-none transition-colors placeholder:text-[#B0B4C0] focus:border-[#4C5FD5]"
+            className="w-full rounded-lg border border-[#EAECF0] px-3 py-2 text-[13.5px] text-[#101828] outline-none transition-colors placeholder:text-[#98A2B3] focus:border-[#4C5FD5]"
           />
 
           <div className="mt-3 flex items-center gap-2">
-            <label className="text-[12.5px] font-medium text-[#6B7280]" htmlFor="invite-role">
+            <label className="text-[12.5px] font-medium text-[#667085]" htmlFor="invite-role">
               Role
             </label>
             <select
               id="invite-role"
               value={role}
               onChange={(e) => setRole(e.target.value as Role)}
-              className="rounded-lg border border-[#E3E5EC] bg-white px-2.5 py-1.5 text-[13px] text-[#171A21] outline-none focus:border-[#4C5FD5]"
+              className="rounded-lg border border-[#EAECF0] bg-white px-2.5 py-1.5 text-[13px] text-[#101828] outline-none focus:border-[#4C5FD5]"
             >
               <option value="editor">Editor</option>
               <option value="viewer">Viewer</option>
@@ -145,12 +145,12 @@ export default function InviteModal({
 
         {/* Members */}
         <div className="px-5 py-4">
-          <h3 className="mb-2.5 text-[12.5px] font-semibold uppercase tracking-wide text-[#6B7280]">
+          <h3 className="mb-2.5 text-[12.5px] font-semibold uppercase tracking-wide text-[#667085]">
             Members
           </h3>
           <div className="flex flex-col gap-1">
             {members.map((m) => (
-              <div key={m.id} className="flex items-center justify-between rounded-lg px-1.5 py-1.5 hover:bg-[#F6F7FB]">
+              <div key={m.id} className="flex items-center justify-between rounded-lg px-1.5 py-1.5 hover:bg-[#F9FAFB]">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <span
                     style={{ backgroundColor: m.color }}
@@ -158,7 +158,7 @@ export default function InviteModal({
                   >
                     {m.initials}
                   </span>
-                  <span className="truncate text-[13.5px] text-[#171A21]">{m.label}</span>
+                  <span className="truncate text-[13.5px] text-[#101828]">{m.label}</span>
                   <span className={`flex-shrink-0 rounded-md px-1.5 py-0.5 text-[11px] font-medium ${roleTone[m.role]}`}>
                     {m.role}
                   </span>
@@ -167,7 +167,7 @@ export default function InviteModal({
                   <button
                     onClick={() => removeMember(m.id)}
                     aria-label={`Remove ${m.label}`}
-                    className="ml-2 flex-shrink-0 rounded-md p-1 text-[#B0B4C0] transition-colors hover:bg-[#FBEAE9] hover:text-[#C4453D]"
+                    className="ml-2 flex-shrink-0 rounded-md p-1 text-[#98A2B3] transition-colors hover:bg-[#FBEAE9] hover:text-[#C4453D]"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>

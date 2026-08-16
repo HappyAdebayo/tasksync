@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Plus, ChevronRight, Folder, Trash2 } from 'lucide-react';
@@ -44,8 +44,8 @@ export default function WorkspacesSection({
       )}
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h1 className="text-[19px] font-semibold text-[#171A21]">Workspaces</h1>
-          <p className="mt-0.5 text-[13px] text-[#6B7280]">Pick a workspace to see its boards.</p>
+          <h1 className="text-[19px] font-semibold text-[#101828]">Workspaces</h1>
+          <p className="mt-0.5 text-[13px] text-[#667085]">Pick a workspace to see its boards.</p>
         </div>
         <button
           onClick={() => setOpen(true)}
@@ -64,7 +64,7 @@ export default function WorkspacesSection({
           return (
             <div
               key={workspace.id}
-              className="group relative flex flex-col items-start gap-3 rounded-2xl border border-[#E3E5EC] bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#D3D7E3] hover:shadow-[0_8px_20px_rgba(23,26,33,0.08)]"
+              className="group relative flex flex-col items-start gap-3 rounded-2xl border border-[#EAECF0] bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#D0D5DD] hover:shadow-[0_8px_20px_rgba(23,26,33,0.08)]"
             >
               <button
                 onClick={() => onSelectWorkspace(workspace.id)}
@@ -78,12 +78,12 @@ export default function WorkspacesSection({
                 </span>
                 <div className="flex w-full items-center justify-between gap-2">
                   <div>
-                    <p className="text-[14.5px] font-semibold text-[#171A21]">{workspace.name}</p>
-                    <p className="mt-0.5 text-[12.5px] text-[#6B7280]">
+                    <p className="text-[14.5px] font-semibold text-[#101828]">{workspace.name}</p>
+                    <p className="mt-0.5 text-[12.5px] text-[#667085]">
                       {count} {count === 1 ? 'board' : 'boards'}
                     </p>
                   </div>
-                  <ChevronRight className="h-4 w-4 flex-shrink-0 text-[#B0B4C0] transition-transform group-hover:translate-x-0.5" />
+                  <ChevronRight className="h-4 w-4 flex-shrink-0 text-[#98A2B3] transition-transform group-hover:translate-x-0.5" />
                 </div>
               </button>
 
@@ -93,7 +93,7 @@ export default function WorkspacesSection({
                 className={`absolute right-3 top-3 flex h-7 items-center gap-1 rounded-full px-2 text-[11.5px] font-medium transition-all ${
                   isPendingDelete
                     ? 'bg-red-500 text-white'
-                    : 'bg-white text-[#B0B4C0] opacity-0 hover:bg-red-50 hover:text-red-500 group-hover:opacity-100'
+                    : 'bg-white text-[#98A2B3] opacity-0 hover:bg-red-50 hover:text-red-500 group-hover:opacity-100'
                 }`}
                 title={isPendingDelete ? 'Click again to confirm' : 'Delete workspace'}
               >

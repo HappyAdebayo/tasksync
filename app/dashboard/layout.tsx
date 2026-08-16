@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -31,10 +31,10 @@ export default function DashboardLayout({
 
   if (isLoading) {
     return (
-      <main className="flex h-screen items-center justify-center bg-[#F6F7FB]">
+      <main className="flex h-screen items-center justify-center bg-[#F9FAFB]">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-3 border-[#4C5FD5] border-t-transparent" />
-          <p className="text-[13px] font-medium text-[#6B7280]">Loading dashboard…</p>
+          <p className="text-[13px] font-medium text-[#667085]">Loading dashboard…</p>
         </div>
       </main>
     );
@@ -42,7 +42,7 @@ export default function DashboardLayout({
 
   return (
     <SocketProvider>
-      <div className="flex h-screen overflow-hidden bg-[#F6F7FB] text-[#171A21]">
+      <div className="flex h-screen overflow-hidden bg-[#F9FAFB] text-[#101828]">
         {/* Sidebar (desktop: always visible, mobile: slide-in drawer) */}
         <Sidebar
           mobileOpen={mobileSidebarOpen}

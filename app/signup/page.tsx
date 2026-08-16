@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -41,19 +41,19 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#F6F7FB] px-4">
+    <main className="flex min-h-screen items-center justify-center bg-[#F9FAFB] px-4">
       <div className="w-full max-w-[400px]">
         <div className="mb-7 flex flex-col items-center gap-2.5">
           <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#4C5FD5] text-white">
             <LayoutGrid className="h-5 w-5" />
           </span>
-          <h1 className="text-[19px] font-semibold text-[#171A21]">Create your account</h1>
-          <p className="text-[13px] text-[#6B7280]">Start organizing your work in minutes.</p>
+          <h1 className="text-[19px] font-semibold text-[#101828]">Create your account</h1>
+          <p className="text-[13px] text-[#667085]">Start organizing your work in minutes.</p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl border border-[#E3E5EC] bg-white p-6 shadow-[0_8px_20px_rgba(23,26,33,0.05)]"
+          className="rounded-2xl border border-[#EAECF0] bg-white p-6 shadow-[0_8px_20px_rgba(23,26,33,0.05)]"
         >
           {error && (
             <div className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-[12.5px] font-medium text-[#C4453D]">
@@ -62,7 +62,7 @@ export default function SignupPage() {
           )}
 
           <div className="mb-4">
-            <label htmlFor="name" className="mb-1.5 block text-[12.5px] font-medium text-[#171A21]">
+            <label htmlFor="name" className="mb-1.5 block text-[12.5px] font-medium text-[#101828]">
               Name
             </label>
             <input
@@ -72,12 +72,12 @@ export default function SignupPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Jane Doe"
-              className="w-full rounded-lg border border-[#E3E5EC] px-3 py-2.5 text-[13.5px] text-[#171A21] outline-none transition-colors placeholder:text-[#B0B4C0] focus:border-[#4C5FD5]"
+              className="w-full rounded-lg border border-[#EAECF0] px-3 py-2.5 text-[13.5px] text-[#101828] outline-none transition-colors placeholder:text-[#98A2B3] focus:border-[#4C5FD5]"
             />
           </div>
 
           <div className="mb-4">
-            <label htmlFor="email" className="mb-1.5 block text-[12.5px] font-medium text-[#171A21]">
+            <label htmlFor="email" className="mb-1.5 block text-[12.5px] font-medium text-[#101828]">
               Email
             </label>
             <input
@@ -87,12 +87,12 @@ export default function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="jane@company.com"
-              className="w-full rounded-lg border border-[#E3E5EC] px-3 py-2.5 text-[13.5px] text-[#171A21] outline-none transition-colors placeholder:text-[#B0B4C0] focus:border-[#4C5FD5]"
+              className="w-full rounded-lg border border-[#EAECF0] px-3 py-2.5 text-[13.5px] text-[#101828] outline-none transition-colors placeholder:text-[#98A2B3] focus:border-[#4C5FD5]"
             />
           </div>
 
           <div className="mb-5">
-            <label htmlFor="password" className="mb-1.5 block text-[12.5px] font-medium text-[#171A21]">
+            <label htmlFor="password" className="mb-1.5 block text-[12.5px] font-medium text-[#101828]">
               Password
             </label>
             <div className="relative">
@@ -103,13 +103,13 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 8 characters"
-                className="w-full rounded-lg border border-[#E3E5EC] px-3 py-2.5 pr-10 text-[13.5px] text-[#171A21] outline-none transition-colors placeholder:text-[#B0B4C0] focus:border-[#4C5FD5]"
+                className="w-full rounded-lg border border-[#EAECF0] px-3 py-2.5 pr-10 text-[13.5px] text-[#101828] outline-none transition-colors placeholder:text-[#98A2B3] focus:border-[#4C5FD5]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#B0B4C0] hover:text-[#6B7280]"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#98A2B3] hover:text-[#667085]"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -125,7 +125,7 @@ export default function SignupPage() {
           </button>
         </form>
 
-        <p className="mt-5 text-center text-[13px] text-[#6B7280]">
+        <p className="mt-5 text-center text-[13px] text-[#667085]">
           Already have an account?{' '}
           <Link href="/login" className="font-medium text-[#4C5FD5] hover:text-[#3E4EC0]">
             Log in

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -35,7 +35,7 @@ function AvatarStack({ members }: { members: NonNullable<Board['members']> }) {
         </span>
       ))}
       {members.length > 4 && (
-        <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#E3E5EC] text-[9.5px] font-bold text-[#6B7280] -ml-1.5">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#EAECF0] text-[9.5px] font-bold text-[#667085] -ml-1.5">
           +{members.length - 4}
         </span>
       )}
@@ -141,7 +141,7 @@ function WorkspacesContent() {
           {/* Simple Back button */}
           <button
             onClick={() => setSelectedWsId(null)}
-            className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#6B7280] transition-colors hover:text-[#4C5FD5]"
+            className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#667085] transition-colors hover:text-[#4C5FD5]"
           >
             <ChevronLeft className="h-4 w-4" />
             Back to Workspaces
@@ -158,12 +158,12 @@ function WorkspacesContent() {
               </span>
               <div>
                 <div className="flex items-center gap-2.5">
-                  <h1 className="font-[family-name:var(--font-display)] text-[24px] font-bold text-[#171A21] tracking-tight">
+                  <h1 className="font-[family-name:var(--font-display)] text-[24px] font-bold text-[#101828] tracking-tight">
                     {activeWorkspace.name}
                   </h1>
                   <RoleBadge role={activeWorkspace.role} />
                 </div>
-                <p className="text-[13px] text-[#6B7280]">
+                <p className="text-[13px] text-[#667085]">
                   {workspaceBoards.length} {workspaceBoards.length === 1 ? 'board' : 'boards'} in this workspace
                 </p>
               </div>
@@ -173,7 +173,7 @@ function WorkspacesContent() {
               {activeWorkspace.role === 'owner' && (
                 <button
                   onClick={() => setInviteModalOpen(true)}
-                  className="flex items-center gap-1.5 rounded-xl border border-[#E3E5EC] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#171A21] shadow-xs hover:border-[#4C5FD5] hover:text-[#4C5FD5] transition-all"
+                  className="flex items-center gap-1.5 rounded-xl border border-[#EAECF0] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#101828] shadow-xs hover:border-[#4C5FD5] hover:text-[#4C5FD5] transition-all"
                 >
                   <Users className="h-4 w-4" />
                   Invite Members
@@ -198,12 +198,12 @@ function WorkspacesContent() {
 
           {/* Boards Grid */}
           {workspaceBoards.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-[#D3D7E3] bg-white px-6 py-16 text-center">
+            <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-[#D0D5DD] bg-white px-6 py-16 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF0FD] text-[#4C5FD5]">
                 <Kanban className="h-6 w-6" />
               </div>
-              <h3 className="mt-4 text-[16px] font-semibold text-[#171A21]">No boards yet</h3>
-              <p className="mt-1 text-[13px] text-[#6B7280] max-w-sm">
+              <h3 className="mt-4 text-[16px] font-semibold text-[#101828]">No boards yet</h3>
+              <p className="mt-1 text-[13px] text-[#667085] max-w-sm">
                 {canEdit
                   ? `Create the first Kanban board in "${activeWorkspace.name}" to start tracking tasks.`
                   : `There are currently no boards in "${activeWorkspace.name}".`}
@@ -226,7 +226,7 @@ function WorkspacesContent() {
                 return (
                   <div
                     key={board.id}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#E3E5EC] bg-white transition-all duration-200 hover:-translate-y-1 hover:border-[#4C5FD5]/40 hover:shadow-md"
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#EAECF0] bg-white transition-all duration-200 hover:-translate-y-1 hover:border-[#4C5FD5]/40 hover:shadow-md"
                   >
                     <div
                       className="h-2 w-full"
@@ -238,25 +238,25 @@ function WorkspacesContent() {
                       className="flex flex-1 flex-col p-5 text-left"
                     >
                       <div className="flex items-center justify-between">
-                        <h3 className="font-[family-name:var(--font-display)] text-[16px] font-bold text-[#171A21] group-hover:text-[#4C5FD5] transition-colors">
+                        <h3 className="font-[family-name:var(--font-display)] text-[16px] font-bold text-[#101828] group-hover:text-[#4C5FD5] transition-colors">
                           {board.name}
                         </h3>
-                        <span className="text-[12px] font-medium text-[#8E95A5]">
+                        <span className="text-[12px] font-medium text-[#98A2B3]">
                           {board.listCount ?? 0} {board.listCount === 1 ? 'list' : 'lists'}
                         </span>
                       </div>
 
                       {board.description && (
-                        <p className="mt-1.5 line-clamp-2 text-[12.5px] text-[#6B7280]">
+                        <p className="mt-1.5 line-clamp-2 text-[12.5px] text-[#667085]">
                           {board.description}
                         </p>
                       )}
 
-                      <div className="mt-6 flex items-center justify-between border-t border-[#F0F2F7] pt-3.5">
+                      <div className="mt-6 flex items-center justify-between border-t border-[#F2F4F7] pt-3.5">
                         {board.members && board.members.length > 0 ? (
                           <AvatarStack members={board.members} />
                         ) : (
-                          <span className="text-[11.5px] text-[#8E95A5]">1 member</span>
+                          <span className="text-[11.5px] text-[#98A2B3]">1 member</span>
                         )}
 
                         <span className="flex items-center gap-1 text-[12px] font-semibold text-[#4C5FD5] group-hover:translate-x-0.5 transition-transform">
@@ -273,7 +273,7 @@ function WorkspacesContent() {
                         className={`absolute right-3 top-4 flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition-all ${
                           isPendingDelete
                             ? 'bg-red-500 text-white z-10'
-                            : 'text-[#B0B4C0] opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500'
+                            : 'text-[#98A2B3] opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500'
                         }`}
                         title={isPendingDelete ? 'Confirm delete' : 'Delete board'}
                       >
@@ -289,13 +289,13 @@ function WorkspacesContent() {
               {canEdit && (
                 <button
                   onClick={() => setBoardModalOpen(true)}
-                  className="flex min-h-[160px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D3D7E3] bg-[#FAFAFC] p-5 text-center transition-all hover:border-[#4C5FD5] hover:bg-white group"
+                  className="flex min-h-[160px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D0D5DD] bg-[#F9FAFB] p-5 text-center transition-all hover:border-[#4C5FD5] hover:bg-white group"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-[#E3E5EC] text-[#6B7280] shadow-xs group-hover:border-[#4C5FD5] group-hover:text-[#4C5FD5] group-hover:scale-110 transition-all">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-[#EAECF0] text-[#667085] shadow-xs group-hover:border-[#4C5FD5] group-hover:text-[#4C5FD5] group-hover:scale-110 transition-all">
                     <Plus className="h-4 w-4" />
                   </span>
-                  <span className="mt-2 text-[13.5px] font-semibold text-[#171A21]">Create Board</span>
-                  <span className="text-[11.5px] text-[#8E95A5]">Add another Kanban board</span>
+                  <span className="mt-2 text-[13.5px] font-semibold text-[#101828]">Create Board</span>
+                  <span className="text-[11.5px] text-[#98A2B3]">Add another Kanban board</span>
                 </button>
               )}
             </div>
@@ -307,10 +307,10 @@ function WorkspacesContent() {
           {/* Header */}
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="font-[family-name:var(--font-display)] text-[26px] font-bold text-[#171A21] tracking-tight">
+              <h1 className="font-[family-name:var(--font-display)] text-[26px] font-bold text-[#101828] tracking-tight">
                 Workspaces
               </h1>
-              <p className="mt-0.5 text-[13.5px] text-[#6B7280]">
+              <p className="mt-0.5 text-[13.5px] text-[#667085]">
                 Select a workspace to view its boards, or create a new one.
               </p>
             </div>
@@ -335,7 +335,7 @@ function WorkspacesContent() {
                 <div
                   key={ws.id}
                   onClick={() => setSelectedWsId(ws.id)}
-                  className="group relative flex cursor-pointer flex-col justify-between rounded-2xl border border-[#E3E5EC] bg-white p-5 transition-all duration-200 hover:-translate-y-1 hover:border-[#4C5FD5]/40 hover:shadow-md"
+                  className="group relative flex cursor-pointer flex-col justify-between rounded-2xl border border-[#EAECF0] bg-white p-5 transition-all duration-200 hover:-translate-y-1 hover:border-[#4C5FD5]/40 hover:shadow-md"
                 >
                   <div>
                     <div className="flex items-center justify-between">
@@ -355,7 +355,7 @@ function WorkspacesContent() {
                             className={`flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition-all ${
                               isPendingDelete
                                 ? 'bg-red-500 text-white'
-                                : 'text-[#B0B4C0] opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500'
+                                : 'text-[#98A2B3] opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500'
                             }`}
                             title={isPendingDelete ? 'Confirm delete' : 'Delete workspace'}
                           >
@@ -366,15 +366,15 @@ function WorkspacesContent() {
                       </div>
                     </div>
 
-                    <h3 className="mt-4 font-[family-name:var(--font-display)] text-[17px] font-bold text-[#171A21] group-hover:text-[#4C5FD5] transition-colors">
+                    <h3 className="mt-4 font-[family-name:var(--font-display)] text-[17px] font-bold text-[#101828] group-hover:text-[#4C5FD5] transition-colors">
                       {ws.name}
                     </h3>
-                    <p className="mt-1 text-[13px] text-[#6B7280]">
+                    <p className="mt-1 text-[13px] text-[#667085]">
                       {wsBoards.length} {wsBoards.length === 1 ? 'board' : 'boards'}
                     </p>
                   </div>
 
-                  <div className="mt-6 flex items-center justify-between border-t border-[#F0F2F7] pt-3.5 text-[12.5px] font-semibold text-[#4C5FD5]">
+                  <div className="mt-6 flex items-center justify-between border-t border-[#F2F4F7] pt-3.5 text-[12.5px] font-semibold text-[#4C5FD5]">
                     <span>View Boards</span>
                     <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
@@ -385,13 +385,13 @@ function WorkspacesContent() {
             {/* Create Workspace Card */}
             <button
               onClick={() => setWsModalOpen(true)}
-              className="flex min-h-[170px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D3D7E3] bg-[#FAFAFC] p-5 text-center transition-all hover:border-[#4C5FD5] hover:bg-white group"
+              className="flex min-h-[170px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D0D5DD] bg-[#F9FAFB] p-5 text-center transition-all hover:border-[#4C5FD5] hover:bg-white group"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[#E3E5EC] text-[#6B7280] shadow-xs group-hover:border-[#4C5FD5] group-hover:text-[#4C5FD5] group-hover:scale-110 transition-all">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[#EAECF0] text-[#667085] shadow-xs group-hover:border-[#4C5FD5] group-hover:text-[#4C5FD5] group-hover:scale-110 transition-all">
                 <Plus className="h-5 w-5" />
               </span>
-              <span className="mt-2.5 text-[14px] font-semibold text-[#171A21]">Create Workspace</span>
-              <span className="text-[12px] text-[#8E95A5]">Add a team space</span>
+              <span className="mt-2.5 text-[14px] font-semibold text-[#101828]">Create Workspace</span>
+              <span className="text-[12px] text-[#98A2B3]">Add a team space</span>
             </button>
           </div>
         </div>

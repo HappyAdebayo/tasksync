@@ -3,8 +3,8 @@ import { spaceGrotesk, inter } from '@/lib/fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Tasksync',
-  description: 'Boards that stay in sync.',
+  title: 'TaskSync — Ship faster. Stay in sync.',
+  description: 'TaskSync gives your team a shared space to plan, track, and deliver work — with every change reflected live across all members. Free to start.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
