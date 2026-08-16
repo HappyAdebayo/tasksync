@@ -1,286 +1,374 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Search,
   Bell,
   Folder,
   Building2,
   User,
+  Kanban,
   Mail,
   CheckCircle2,
   ExternalLink,
+  X,
+  ListTodo,
 } from 'lucide-react';
 import { useNotifications, respondToInvite } from '@/lib/invites';
-import { useBoards } from '@/lib/board-utils';
-import { useWorkspaces } from '@/lib/workspaces';
-import { buildSearchIndex, searchItems, type SearchItem } from '@/lib/search-data';
-import { getStoredUser, clearAuthToken, searchApi } from '@/lib/api';
-import { useDebounceValue } from '@/lib/useDebounce';
+import { getAuthToken } from '@/lib/api';
 
-const TYPE_META: Record<SearchItem['type'], { label: string; icon: typeof Folder }> = {
-  workspace: { label: 'Workspaces', icon: Building2 },
-  board: { label: 'Boards', icon: Folder },
-  person: { label: 'People', icon: User },
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type SearchResult =
+  | { type: 'workspace'; id: string; name: string; workspaceId: string }
+  | { type: 'board'; id: string; name: string; workspaceId: string }
+  | { type: 'task'; id: string; name: string; boardId: string; workspaceId: string; boardListId: string }
+  | { type: 'person'; id: string; name: string; email: string; workspaceId: string };
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getNavHref(result: SearchResult): string {
+  switch (result.type) {
+    case 'workspace':
+      return `/dashboard/workspaces?workspace=${result.workspaceId}`;
+    case 'board':
+      return `/dashboard/boards/${result.id}`;
+    case 'task':
+      return `/dashboard/boards/${result.boardId}`;
+    case 'person':
+      return result.workspaceId
+        ? `/dashboard/workspaces?workspace=${result.workspaceId}`
+        : '/dashboard/workspaces';
+  }
+}
+
+function typeLabel(type: SearchResult['type']) {
+  switch (type) {
+    case 'workspace': return 'Workspace';
+    case 'board': return 'Board';
+    case 'task': return 'Task';
+    case 'person': return 'Member';
+  }
+}
+
+function TypeIcon({ type }: { type: SearchResult['type'] }) {
+  switch (type) {
+    case 'workspace': return <Building2 className="h-3.5 w-3.5" />;
+    case 'board': return <Kanban className="h-3.5 w-3.5" />;
+    case 'task': return <ListTodo className="h-3.5 w-3.5" />;
+    case 'person': return <User className="h-3.5 w-3.5" />;
+  }
+}
+
+const TYPE_COLOR: Record<SearchResult['type'], string> = {
+  workspace: 'bg-purple-50 text-purple-600',
+  board: 'bg-[#EEF0FD] text-[#4C5FD5]',
+  task: 'bg-emerald-50 text-emerald-600',
+  person: 'bg-amber-50 text-amber-600',
 };
 
-function HighlightedLabel({ label, query }: { label: string; query: string }) {
-  const index = label.toLowerCase().indexOf(query.toLowerCase());
-  if (index === -1) return <>{label}</>;
+function HighlightText({ text, query }: { text: string; query: string }) {
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1 || !query) return <>{text}</>;
   return (
     <>
-      {label.slice(0, index)}
-      <span className="font-semibold text-[#171A21]">{label.slice(index, index + query.length)}</span>
-      {label.slice(index + query.length)}
+      {text.slice(0, idx)}
+      <mark className="bg-yellow-100 text-[#171A21] rounded-sm not-italic font-semibold">
+        {text.slice(idx, idx + query.length)}
+      </mark>
+      {text.slice(idx + query.length)}
     </>
   );
 }
 
+// ─── Notification dropdown helpers ────────────────────────────────────────────
+
+function NotifDropdown({
+  notifications,
+  onClose,
+}: {
+  notifications: ReturnType<typeof useNotifications>;
+  onClose: () => void;
+}) {
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  return (
+    <div
+      role="menu"
+      className="absolute right-0 top-[calc(100%+8px)] w-[320px] rounded-2xl border border-[#E3E5EC] bg-white shadow-[0_16px_36px_rgba(23,26,33,0.12)] z-50 overflow-hidden"
+    >
+      <div className="flex items-center justify-between border-b border-[#E3E5EC] bg-[#FAFAFC] px-4 py-3">
+        <div className="flex items-center gap-2">
+          <Mail className="h-4 w-4 text-[#4C5FD5]" />
+          <span className="text-[13.5px] font-semibold text-[#171A21]">Notifications</span>
+          {unreadCount > 0 && (
+            <span className="rounded-full bg-[#C4453D] px-1.5 py-0.5 text-[10.5px] font-bold text-white">
+              {unreadCount}
+            </span>
+          )}
+        </div>
+        <Link
+          href="/dashboard/notifications"
+          onClick={onClose}
+          className="flex items-center gap-1 text-[11.5px] font-medium text-[#4C5FD5] hover:underline"
+        >
+          View all <ExternalLink className="h-3 w-3" />
+        </Link>
+      </div>
+
+      {notifications.length === 0 ? (
+        <div className="px-4 py-8 text-center">
+          <CheckCircle2 className="mx-auto h-8 w-8 text-[#17C3B2] stroke-[1.5]" />
+          <p className="mt-2 text-[13px] font-medium text-[#171A21]">All caught up!</p>
+          <p className="mt-0.5 text-[11.5px] text-[#6B7280]">No notifications at the moment.</p>
+        </div>
+      ) : (
+        <div className="flex flex-col divide-y divide-[#E3E5EC] max-h-[320px] overflow-y-auto">
+          {notifications.slice(0, 5).map((notif) => (
+            <div
+              key={notif.id}
+              className={`flex flex-col gap-1 px-4 py-3 ${!notif.isRead ? 'bg-[#F8F9FD]' : ''}`}
+            >
+              <p className="text-[12.5px] font-semibold text-[#171A21]">{notif.title}</p>
+              <p className="text-[12px] text-[#6B7280]">{notif.message}</p>
+              {notif.invitationToken && notif.invitationStatus === 'pending' && (
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    onClick={() => respondToInvite(notif.id, notif.invitationToken!, 'accept')}
+                    className="rounded-md bg-[#4C5FD5] px-2.5 py-1 text-[11.5px] font-medium text-white hover:bg-[#3E4EC0]"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => respondToInvite(notif.id, notif.invitationToken!, 'decline')}
+                    className="rounded-md border border-[#E3E5EC] px-2.5 py-1 text-[11.5px] font-medium text-[#6B7280] hover:text-[#C4453D]"
+                  >
+                    Decline
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Navbar Component ─────────────────────────────────────────────────────
+
 export default function Navbar() {
-  const [notifOpen, setNotifOpen] = useState(false);
-  const [query, setQuery] = useState('');
-  const [resultsOpen, setResultsOpen] = useState(false);
-  const [backendSearchItems, setBackendSearchItems] = useState<SearchItem[]>([]);
-
-  const notifRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef<HTMLDivElement>(null);
-
+  const router = useRouter();
   const notifications = useNotifications();
   const unreadCount = notifications.filter((n) => !n.isRead).length;
-  const boards = useBoards();
-  const workspaces = useWorkspaces();
 
-  const debouncedQuery = useDebounceValue(query, 300);
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [resultsOpen, setResultsOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
 
+  const searchRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Close dropdowns on outside click
   useEffect(() => {
-    if (!debouncedQuery.trim()) {
-      setBackendSearchItems([]);
+    function handleClickOutside(e: MouseEvent) {
+      const t = e.target as Node;
+      if (searchRef.current && !searchRef.current.contains(t)) setResultsOpen(false);
+      if (notifRef.current && !notifRef.current.contains(t)) setNotifOpen(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Debounced backend search scoped to user's workspaces
+  const doSearch = useCallback(async (q: string) => {
+    if (!q.trim()) {
+      setResults([]);
       return;
     }
 
-    let active = true;
-    searchApi(debouncedQuery)
-      .then((res) => {
-        if (!active) return;
-        const remoteItems: SearchItem[] = [];
-        if (res.boards) {
-          res.boards.forEach((b) =>
-            remoteItems.push({ id: b.id, label: b.name, type: 'board' })
-          );
-        }
-        if (res.tasks) {
-          res.tasks.forEach((t) =>
-            remoteItems.push({ id: t.id, label: t.name, type: 'board', meta: 'Task' })
-          );
-        }
-        if (res.people) {
-          res.people.forEach((p) =>
-            remoteItems.push({ id: p.id, label: p.name, type: 'person', meta: p.email })
-          );
-        }
-        setBackendSearchItems(remoteItems);
-      })
-      .catch(() => {
-        // Fallback to local
+    setIsSearching(true);
+    try {
+      const token = getAuthToken();
+      const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(q)}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
+      if (!res.ok) return;
 
-    return () => {
-      active = false;
-    };
-  }, [debouncedQuery]);
+      const data = await res.json();
+      const merged: SearchResult[] = [];
 
-  const index = useMemo(() => {
-    const localIndex = buildSearchIndex(workspaces, boards);
-    if (backendSearchItems.length === 0) return localIndex;
-    const existingIds = new Set(localIndex.map((i) => i.id));
-    const merged = [...localIndex];
-    for (const item of backendSearchItems) {
-      if (!existingIds.has(item.id)) {
-        merged.push(item);
-      }
+      (data.boards || []).forEach((b: any) =>
+        merged.push({ type: 'board', id: b.id, name: b.name, workspaceId: b.workspaceId })
+      );
+      (data.tasks || []).forEach((t: any) =>
+        merged.push({
+          type: 'task',
+          id: t.id,
+          name: t.name,
+          boardId: t.boardId,
+          boardListId: t.boardListId,
+          workspaceId: t.workspaceId,
+        })
+      );
+      (data.people || []).forEach((p: any) =>
+        merged.push({ type: 'person', id: p.id, name: p.name, email: p.email, workspaceId: p.workspaceId })
+      );
+
+      setResults(merged);
+    } catch {
+      setResults([]);
+    } finally {
+      setIsSearching(false);
     }
-    return merged;
-  }, [workspaces, boards, backendSearchItems]);
-
-  const results = useMemo(() => searchItems(index, query), [index, query]);
-  const grouped = useMemo(() => {
-    const groups: Partial<Record<SearchItem['type'], SearchItem[]>> = {};
-    for (const item of results) {
-      (groups[item.type] ??= []).push(item);
-    }
-    return groups;
-  }, [results]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      const target = e.target as Node;
-      if (notifRef.current && !notifRef.current.contains(target)) setNotifOpen(false);
-      if (searchRef.current && !searchRef.current.contains(target)) setResultsOpen(false);
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
   }, []);
 
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    setResultsOpen(true);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => doSearch(value), 280);
+  };
+
+  const handleResultClick = (result: SearchResult) => {
+    setResultsOpen(false);
+    setQuery('');
+    router.push(getNavHref(result));
+  };
+
+  const clearSearch = () => {
+    setQuery('');
+    setResults([]);
+    setResultsOpen(false);
+  };
+
+  // Group results by type
+  const grouped = useMemo(() => {
+    const g: Partial<Record<SearchResult['type'], SearchResult[]>> = {};
+    for (const r of results) {
+      (g[r.type] ??= []).push(r);
+    }
+    return g;
+  }, [results]);
+
+  const orderedTypes: SearchResult['type'][] = ['board', 'task', 'person', 'workspace'];
+
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-[#E3E5EC] bg-white/95 px-6 backdrop-blur-md">
-      {/* Search Input */}
-      <div className="relative flex-1 max-w-md" ref={searchRef}>
-        <div className="flex items-center gap-2 rounded-xl border border-[#E3E5EC] bg-[#F6F7FB] px-3.5 py-1.5 transition-all focus-within:border-[#4C5FD5] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#4C5FD5]/10">
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-[#E3E5EC] bg-white/95 px-6 backdrop-blur-md gap-4">
+
+      {/* Search */}
+      <div className="relative flex-1 max-w-lg" ref={searchRef}>
+        <div className="flex items-center gap-2 rounded-xl border border-[#E3E5EC] bg-[#F6F7FB] px-3.5 py-2 transition-all focus-within:border-[#4C5FD5] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#4C5FD5]/10">
           <Search className="h-3.5 w-3.5 flex-shrink-0 text-[#8E95A5]" />
           <input
             type="text"
             value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setResultsOpen(true);
-            }}
+            onChange={(e) => handleQueryChange(e.target.value)}
             onFocus={() => query && setResultsOpen(true)}
-            placeholder="Search tasks, workspaces, members…"
+            onKeyDown={(e) => e.key === 'Escape' && clearSearch()}
+            placeholder="Search boards, tasks, members…"
             aria-label="Search"
-            role="combobox"
-            aria-expanded={resultsOpen}
             autoComplete="off"
             className="w-full bg-transparent text-[13px] text-[#171A21] placeholder:text-[#8E95A5] outline-none"
           />
-          {query && (
-            <button
-              onClick={() => setQuery('')}
-              className="text-[11px] text-[#8E95A5] hover:text-[#171A21]"
-            >
-              Clear
+          {isSearching && (
+            <div className="h-3.5 w-3.5 flex-shrink-0 animate-spin rounded-full border-2 border-[#4C5FD5] border-t-transparent" />
+          )}
+          {query && !isSearching && (
+            <button onClick={clearSearch} className="text-[#8E95A5] hover:text-[#171A21] transition-colors">
+              <X className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
 
+        {/* Search Results Dropdown */}
         {resultsOpen && query && (
           <div
             role="listbox"
-            className="absolute left-0 right-0 top-[calc(100%+8px)] max-h-[360px] overflow-y-auto rounded-xl border border-[#E3E5EC] bg-white p-1.5 shadow-[0_12px_32px_rgba(23,26,33,0.12)] z-50"
+            className="absolute left-0 right-0 top-[calc(100%+6px)] max-h-[420px] overflow-y-auto rounded-2xl border border-[#E3E5EC] bg-white p-2 shadow-[0_16px_40px_rgba(23,26,33,0.12)] z-50"
           >
-            {results.length === 0 ? (
-              <div className="p-4 text-center">
-                <p className="text-[13px] text-[#6B7280]">
-                  No results for &ldquo;{query}&rdquo;
+            {results.length === 0 && !isSearching ? (
+              <div className="px-4 py-8 text-center">
+                <Search className="mx-auto h-8 w-8 text-[#D3D7E3]" />
+                <p className="mt-2 text-[13px] font-medium text-[#171A21]">No results found</p>
+                <p className="mt-0.5 text-[11.5px] text-[#6B7280]">
+                  Try searching within your workspaces
                 </p>
               </div>
             ) : (
-              (Object.keys(grouped) as SearchItem['type'][]).map((type) => {
-                const { label, icon: Icon } = TYPE_META[type];
-                return (
-                  <div key={type} className="mb-1.5 last:mb-0">
-                    <p className="px-2.5 pb-1 pt-1.5 text-[10.5px] font-bold uppercase tracking-wider text-[#8E95A5]">
-                      {label}
+              orderedTypes
+                .filter((type) => grouped[type] && grouped[type]!.length > 0)
+                .map((type) => (
+                  <div key={type} className="mb-2 last:mb-0">
+                    <p className="mb-1 px-2.5 pt-1.5 text-[10px] font-bold uppercase tracking-widest text-[#8E95A5]">
+                      {typeLabel(type)}s
                     </p>
-                    {grouped[type]!.map((item) => (
+                    {grouped[type]!.map((result) => (
                       <button
-                        key={item.id}
+                        key={result.id}
                         role="option"
                         aria-selected={false}
-                        className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left hover:bg-[#F6F7FB] transition-colors"
-                        onClick={() => {
-                          setQuery(item.label);
-                          setResultsOpen(false);
-                        }}
+                        onClick={() => handleResultClick(result)}
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-[#F6F7FB] group"
                       >
-                        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#EEF0FD] text-[#4C5FD5]">
-                          <Icon className="h-3.5 w-3.5" />
+                        <span className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg ${TYPE_COLOR[type]}`}>
+                          <TypeIcon type={type} />
                         </span>
-                        <span className="min-w-0 truncate text-[13px] text-[#171A21]">
-                          <HighlightedLabel label={item.label} query={query} />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13px] font-medium text-[#171A21]">
+                            <HighlightText text={result.name} query={query} />
+                          </p>
+                          {result.type === 'person' && (
+                            <p className="truncate text-[11.5px] text-[#8E95A5]">
+                              <HighlightText text={result.email} query={query} />
+                            </p>
+                          )}
+                          {result.type === 'task' && (
+                            <p className="truncate text-[11.5px] text-[#8E95A5]">
+                              Click to open board →
+                            </p>
+                          )}
+                        </div>
+                        <span className="text-[11px] text-[#B0B4C0] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                          Go →
                         </span>
-                        {item.meta && (
-                          <span className="ml-auto flex-shrink-0 truncate text-[11.5px] text-[#8E95A5]">
-                            {item.meta}
-                          </span>
-                        )}
                       </button>
                     ))}
                   </div>
-                );
-              })
+                ))
             )}
           </div>
         )}
       </div>
 
-      {/* Right icons: Notification Bell */}
-      <div className="flex items-center gap-3">
-        <div className="relative" ref={notifRef}>
-          <button
-            onClick={() => setNotifOpen((v) => !v)}
-            aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`}
-            className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#E3E5EC] bg-white text-[#6B7280] transition-colors hover:border-[#4C5FD5] hover:text-[#4C5FD5]"
-          >
-            <Bell className="h-4 w-4" />
-            {unreadCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#C4453D] px-1 text-[10px] font-bold text-white shadow-xs">
-                {unreadCount}
-              </span>
-            )}
-          </button>
-
-          {notifOpen && (
-            <div
-              role="menu"
-              className="absolute right-0 top-[calc(100%+8px)] w-[320px] rounded-2xl border border-[#E3E5EC] bg-white shadow-[0_16px_36px_rgba(23,26,33,0.12)] z-50 overflow-hidden"
-            >
-              <div className="flex items-center justify-between border-b border-[#E3E5EC] bg-[#FAFAFC] px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-[#4C5FD5]" />
-                  <span className="text-[13.5px] font-semibold text-[#171A21]">Notifications</span>
-                </div>
-                <Link
-                  href="/dashboard/notifications"
-                  onClick={() => setNotifOpen(false)}
-                  className="flex items-center gap-1 text-[11.5px] font-medium text-[#4C5FD5] hover:underline"
-                >
-                  View all <ExternalLink className="h-3 w-3" />
-                </Link>
-              </div>
-
-              {notifications.length === 0 ? (
-                <div className="px-4 py-8 text-center">
-                  <CheckCircle2 className="mx-auto h-8 w-8 text-[#17C3B2] stroke-[1.5]" />
-                  <p className="mt-2 text-[13px] font-medium text-[#171A21]">All caught up!</p>
-                  <p className="mt-0.5 text-[11.5px] text-[#6B7280]">No notifications at the moment.</p>
-                </div>
-              ) : (
-                <div className="flex flex-col divide-y divide-[#E3E5EC] max-h-[320px] overflow-y-auto">
-                  {notifications.slice(0, 4).map((notif) => (
-                    <div
-                      key={notif.id}
-                      className={`flex flex-col gap-1 px-4 py-3 ${
-                        !notif.isRead ? 'bg-[#F8F9FD]' : ''
-                      }`}
-                    >
-                      <p className="text-[12.5px] font-semibold text-[#171A21]">{notif.title}</p>
-                      <p className="text-[12px] text-[#6B7280]">{notif.message}</p>
-                      {notif.invitationToken && notif.invitationStatus === 'pending' ? (
-                        <div className="flex items-center gap-2 pt-1">
-                          <button
-                            onClick={() => respondToInvite(notif.id, notif.invitationToken!, 'accept')}
-                            className="rounded-md bg-[#4C5FD5] px-2.5 py-1 text-[11.5px] font-medium text-white hover:bg-[#3E4EC0]"
-                          >
-                            Accept
-                          </button>
-                          <button
-                            onClick={() => respondToInvite(notif.id, notif.invitationToken!, 'decline')}
-                            className="rounded-md border border-[#E3E5EC] px-2.5 py-1 text-[11.5px] font-medium text-[#6B7280] hover:text-[#C4453D]"
-                          >
-                            Decline
-                          </button>
-                        </div>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+      {/* Right: Notification Bell */}
+      <div className="relative flex-shrink-0" ref={notifRef}>
+        <button
+          onClick={() => setNotifOpen((v) => !v)}
+          aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`}
+          className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#E3E5EC] bg-white text-[#6B7280] transition-colors hover:border-[#4C5FD5] hover:text-[#4C5FD5]"
+        >
+          <Bell className="h-4 w-4" />
+          {unreadCount > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#C4453D] px-1 text-[10px] font-bold text-white shadow-xs">
+              {unreadCount}
+            </span>
           )}
-        </div>
+        </button>
+
+        {notifOpen && (
+          <NotifDropdown
+            notifications={notifications}
+            onClose={() => setNotifOpen(false)}
+          />
+        )}
       </div>
     </header>
   );

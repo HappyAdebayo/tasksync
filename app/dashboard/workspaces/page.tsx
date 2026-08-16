@@ -11,6 +11,8 @@ import {
   Trash2,
   Users,
   Kanban,
+  Shield,
+  Eye,
 } from 'lucide-react';
 import { useWorkspaces, deleteWorkspace, type Workspace } from '@/lib/workspaces';
 import { useBoards, deleteBoard, type Board } from '@/lib/board-utils';
@@ -41,6 +43,28 @@ function AvatarStack({ members }: { members: NonNullable<Board['members']> }) {
   );
 }
 
+function RoleBadge({ role }: { role?: string }) {
+  if (role === 'owner') {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-[11px] font-semibold text-purple-700 border border-purple-200">
+        <Shield className="h-3 w-3" /> Owner
+      </span>
+    );
+  }
+  if (role === 'editor') {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 border border-blue-200">
+        Editor
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 border border-amber-200">
+      <Eye className="h-3 w-3" /> Viewer (Read only)
+    </span>
+  );
+}
+
 function WorkspacesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -66,6 +90,8 @@ function WorkspacesContent() {
     if (!activeWorkspace) return [];
     return boards.filter((b) => b.workspaceId === activeWorkspace.id);
   }, [boards, activeWorkspace]);
+
+  const canEdit = activeWorkspace?.role === 'owner' || activeWorkspace?.role === 'editor';
 
   const handleDeleteWorkspace = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -131,9 +157,12 @@ function WorkspacesContent() {
                 <Folder className="h-5 w-5" />
               </span>
               <div>
-                <h1 className="font-[family-name:var(--font-display)] text-[24px] font-bold text-[#171A21] tracking-tight">
-                  {activeWorkspace.name}
-                </h1>
+                <div className="flex items-center gap-2.5">
+                  <h1 className="font-[family-name:var(--font-display)] text-[24px] font-bold text-[#171A21] tracking-tight">
+                    {activeWorkspace.name}
+                  </h1>
+                  <RoleBadge role={activeWorkspace.role} />
+                </div>
                 <p className="text-[13px] text-[#6B7280]">
                   {workspaceBoards.length} {workspaceBoards.length === 1 ? 'board' : 'boards'} in this workspace
                 </p>
@@ -141,20 +170,29 @@ function WorkspacesContent() {
             </div>
 
             <div className="flex items-center gap-2.5">
-              <button
-                onClick={() => setInviteModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-xl border border-[#E3E5EC] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#171A21] shadow-xs hover:border-[#4C5FD5] hover:text-[#4C5FD5] transition-all"
-              >
-                <Users className="h-4 w-4" />
-                Invite Members
-              </button>
-              <button
-                onClick={() => setBoardModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-xl bg-[#4C5FD5] px-4 py-2 text-[13px] font-semibold text-white shadow-xs transition-all hover:bg-[#3E4EC0]"
-              >
-                <Plus className="h-4 w-4" />
-                New Board
-              </button>
+              {activeWorkspace.role === 'owner' && (
+                <button
+                  onClick={() => setInviteModalOpen(true)}
+                  className="flex items-center gap-1.5 rounded-xl border border-[#E3E5EC] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#171A21] shadow-xs hover:border-[#4C5FD5] hover:text-[#4C5FD5] transition-all"
+                >
+                  <Users className="h-4 w-4" />
+                  Invite Members
+                </button>
+              )}
+
+              {canEdit ? (
+                <button
+                  onClick={() => setBoardModalOpen(true)}
+                  className="flex items-center gap-1.5 rounded-xl bg-[#4C5FD5] px-4 py-2 text-[13px] font-semibold text-white shadow-xs transition-all hover:bg-[#3E4EC0]"
+                >
+                  <Plus className="h-4 w-4" />
+                  New Board
+                </button>
+              ) : (
+                <span className="rounded-xl bg-amber-50 px-3 py-1.5 text-[12px] font-medium text-amber-700 border border-amber-200 flex items-center gap-1.5">
+                  <Eye className="h-3.5 w-3.5" /> View Only Access
+                </span>
+              )}
             </div>
           </div>
 
@@ -166,15 +204,19 @@ function WorkspacesContent() {
               </div>
               <h3 className="mt-4 text-[16px] font-semibold text-[#171A21]">No boards yet</h3>
               <p className="mt-1 text-[13px] text-[#6B7280] max-w-sm">
-                Create the first Kanban board in &ldquo;{activeWorkspace.name}&rdquo; to start tracking tasks.
+                {canEdit
+                  ? `Create the first Kanban board in "${activeWorkspace.name}" to start tracking tasks.`
+                  : `There are currently no boards in "${activeWorkspace.name}".`}
               </p>
-              <button
-                onClick={() => setBoardModalOpen(true)}
-                className="mt-5 flex items-center gap-1.5 rounded-xl bg-[#4C5FD5] px-4 py-2 text-[13px] font-semibold text-white hover:bg-[#3E4EC0] transition-colors"
-              >
-                <Plus className="h-4 w-4" />
-                Create Board
-              </button>
+              {canEdit && (
+                <button
+                  onClick={() => setBoardModalOpen(true)}
+                  className="mt-5 flex items-center gap-1.5 rounded-xl bg-[#4C5FD5] px-4 py-2 text-[13px] font-semibold text-white hover:bg-[#3E4EC0] transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create Board
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -223,35 +265,39 @@ function WorkspacesContent() {
                       </div>
                     </Link>
 
-                    {/* Delete button */}
-                    <button
-                      onClick={(e) => handleDeleteBoard(e, board.id)}
-                      onBlur={() => setPendingDeleteBoardId(null)}
-                      className={`absolute right-3 top-4 flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition-all ${
-                        isPendingDelete
-                          ? 'bg-red-500 text-white z-10'
-                          : 'text-[#B0B4C0] opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500'
-                      }`}
-                      title={isPendingDelete ? 'Confirm delete' : 'Delete board'}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                      {isPendingDelete && 'Confirm'}
-                    </button>
+                    {/* Delete button only for owner/editor */}
+                    {canEdit && (
+                      <button
+                        onClick={(e) => handleDeleteBoard(e, board.id)}
+                        onBlur={() => setPendingDeleteBoardId(null)}
+                        className={`absolute right-3 top-4 flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition-all ${
+                          isPendingDelete
+                            ? 'bg-red-500 text-white z-10'
+                            : 'text-[#B0B4C0] opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500'
+                        }`}
+                        title={isPendingDelete ? 'Confirm delete' : 'Delete board'}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        {isPendingDelete && 'Confirm'}
+                      </button>
+                    )}
                   </div>
                 );
               })}
 
-              {/* Add Board Card */}
-              <button
-                onClick={() => setBoardModalOpen(true)}
-                className="flex min-h-[160px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D3D7E3] bg-[#FAFAFC] p-5 text-center transition-all hover:border-[#4C5FD5] hover:bg-white group"
-              >
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-[#E3E5EC] text-[#6B7280] shadow-xs group-hover:border-[#4C5FD5] group-hover:text-[#4C5FD5] group-hover:scale-110 transition-all">
-                  <Plus className="h-4 w-4" />
-                </span>
-                <span className="mt-2 text-[13.5px] font-semibold text-[#171A21]">Create Board</span>
-                <span className="text-[11.5px] text-[#8E95A5]">Add another Kanban board</span>
-              </button>
+              {/* Add Board Card only for owner/editor */}
+              {canEdit && (
+                <button
+                  onClick={() => setBoardModalOpen(true)}
+                  className="flex min-h-[160px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D3D7E3] bg-[#FAFAFC] p-5 text-center transition-all hover:border-[#4C5FD5] hover:bg-white group"
+                >
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-[#E3E5EC] text-[#6B7280] shadow-xs group-hover:border-[#4C5FD5] group-hover:text-[#4C5FD5] group-hover:scale-110 transition-all">
+                    <Plus className="h-4 w-4" />
+                  </span>
+                  <span className="mt-2 text-[13.5px] font-semibold text-[#171A21]">Create Board</span>
+                  <span className="text-[11.5px] text-[#8E95A5]">Add another Kanban board</span>
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -283,6 +329,7 @@ function WorkspacesContent() {
             {workspaces.map((ws) => {
               const wsBoards = boards.filter((b) => b.workspaceId === ws.id);
               const isPendingDelete = pendingDeleteWsId === ws.id;
+              const isOwner = ws.role === 'owner';
 
               return (
                 <div
@@ -299,19 +346,24 @@ function WorkspacesContent() {
                         <Folder className="h-5 w-5" />
                       </span>
 
-                      <button
-                        onClick={(e) => handleDeleteWorkspace(e, ws.id)}
-                        onBlur={() => setPendingDeleteWsId(null)}
-                        className={`flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition-all ${
-                          isPendingDelete
-                            ? 'bg-red-500 text-white'
-                            : 'text-[#B0B4C0] opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500'
-                        }`}
-                        title={isPendingDelete ? 'Confirm delete' : 'Delete workspace'}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        {isPendingDelete && 'Confirm'}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <RoleBadge role={ws.role} />
+                        {isOwner && (
+                          <button
+                            onClick={(e) => handleDeleteWorkspace(e, ws.id)}
+                            onBlur={() => setPendingDeleteWsId(null)}
+                            className={`flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition-all ${
+                              isPendingDelete
+                                ? 'bg-red-500 text-white'
+                                : 'text-[#B0B4C0] opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500'
+                            }`}
+                            title={isPendingDelete ? 'Confirm delete' : 'Delete workspace'}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            {isPendingDelete && 'Confirm'}
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     <h3 className="mt-4 font-[family-name:var(--font-display)] text-[17px] font-bold text-[#171A21] group-hover:text-[#4C5FD5] transition-colors">

@@ -1,10 +1,13 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { fetchWorkspacesApi, createWorkspaceApi, deleteWorkspaceApi } from './api';
 
+export type WorkspaceRole = 'owner' | 'editor' | 'viewer';
+
 export type Workspace = {
   id: string;
   name: string;
   accent: string;
+  role?: WorkspaceRole;
 };
 
 const ACCENTS = ['#4C5FD5', '#17C3B2', '#E8A33D', '#C4453D', '#8A5CF6'];
@@ -31,10 +34,11 @@ export async function refreshWorkspaces() {
   try {
     const remote = await fetchWorkspacesApi();
     if (Array.isArray(remote)) {
-      workspaces = remote.map((w, i) => ({
+      workspaces = remote.map((w: any, i) => ({
         id: w.id,
         name: w.name,
         accent: ACCENTS[i % ACCENTS.length],
+        role: (w.role as WorkspaceRole) || 'owner',
       }));
       emitChange();
     }
@@ -60,18 +64,19 @@ export function getWorkspace(id: string): Workspace | undefined {
 export async function createWorkspace(input: { name: string; accent: string }): Promise<Workspace> {
   const accent = input.accent || ACCENTS[workspaces.length % ACCENTS.length];
   try {
-    const created = await createWorkspaceApi({ name: input.name });
+    const created: any = await createWorkspaceApi({ name: input.name });
     const workspace: Workspace = {
       id: created.id,
       name: created.name || input.name,
       accent,
+      role: 'owner',
     };
     workspaces = [...workspaces, workspace];
     emitChange();
     return workspace;
   } catch {
     // Optimistic fallback
-    const workspace: Workspace = { id: crypto.randomUUID(), name: input.name, accent };
+    const workspace: Workspace = { id: crypto.randomUUID(), name: input.name, accent, role: 'owner' };
     workspaces = [...workspaces, workspace];
     emitChange();
     return workspace;

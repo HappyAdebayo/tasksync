@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, Plus, UserPlus, Kanban, Share2 } from 'lucide-react';
+import { ChevronLeft, UserPlus, Eye, Shield } from 'lucide-react';
 import KanbanBoard from '@/components/KanbanBoard';
 import InviteModal from '@/components/InviteModal';
 import { useBoards } from '@/lib/board-utils';
@@ -43,6 +43,8 @@ export default function BoardDetailPage({
 
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
 
+  const isReadOnly = workspace?.role === 'viewer';
+
   return (
     <div className="flex h-full flex-col bg-[#F6F7FB]">
       {/* Board Top Header Subbar */}
@@ -74,6 +76,21 @@ export default function BoardDetailPage({
           <h1 className="truncate font-[family-name:var(--font-display)] text-[16px] font-bold text-[#171A21]">
             {currentBoard?.name ?? 'Board'}
           </h1>
+
+          {workspace?.role && (
+            <span
+              className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10.5px] font-semibold border ${
+                isReadOnly
+                  ? 'border-amber-200 bg-amber-50 text-amber-700'
+                  : workspace.role === 'owner'
+                  ? 'border-purple-200 bg-purple-50 text-purple-700'
+                  : 'border-blue-200 bg-blue-50 text-blue-700'
+              }`}
+            >
+              {isReadOnly ? <Eye className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
+              {isReadOnly ? 'Viewer' : workspace.role === 'owner' ? 'Owner' : 'Editor'}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-shrink-0 items-center gap-3">
@@ -81,7 +98,7 @@ export default function BoardDetailPage({
             <AvatarStack members={currentBoard.members} />
           )}
 
-          {workspace && (
+          {workspace?.role === 'owner' && (
             <button
               onClick={() => setInviteModalOpen(true)}
               className="flex items-center gap-1.5 rounded-xl border border-[#E3E5EC] bg-white px-3.5 py-1.5 text-[12.5px] font-semibold text-[#171A21] shadow-xs transition-all hover:border-[#4C5FD5] hover:text-[#4C5FD5]"
@@ -95,7 +112,7 @@ export default function BoardDetailPage({
 
       {/* Kanban Board Canvas */}
       <div className="flex-1 overflow-hidden">
-        <KanbanBoard boardId={boardId} />
+        <KanbanBoard boardId={boardId} readOnly={isReadOnly} />
       </div>
 
       {workspace && (

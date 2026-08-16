@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, MoreVertical, Calendar, X, GripVertical, Trash2, MousePointer } from 'lucide-react';
+import { Plus, MoreVertical, Calendar, X, GripVertical, Trash2, MousePointer, Eye } from 'lucide-react';
 import {
   DndContext,
   DragOverlay,
@@ -72,15 +72,18 @@ function SortableCard({
   card,
   onDelete,
   isRemoteBeingDragged,
+  readOnly,
 }: {
   card: CardItem;
   onDelete: (cardId: string) => void;
   isRemoteBeingDragged?: boolean;
+  readOnly?: boolean;
 }) {
   const [pendingDelete, setPendingDelete] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card.id,
     data: { type: 'card' },
+    disabled: readOnly,
   });
 
   const style = {
@@ -101,9 +104,11 @@ function SortableCard({
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className={`group relative cursor-grab rounded-xl border bg-white p-3.5 pr-7 transition-all active:cursor-grabbing ${
+      {...(readOnly ? {} : attributes)}
+      {...(readOnly ? {} : listeners)}
+      className={`group relative rounded-xl border bg-white p-3.5 transition-all ${
+        readOnly ? 'cursor-default pr-3.5' : 'cursor-grab pr-7 active:cursor-grabbing'
+      } ${
         isDragging
           ? 'opacity-30 border-[#4C5FD5]'
           : isRemoteBeingDragged
@@ -111,21 +116,25 @@ function SortableCard({
           : 'border-[#E3E5EC] shadow-[0_1px_2px_rgba(23,26,33,0.04)] hover:border-[#D3D7E3] hover:shadow-[0_6px_16px_rgba(23,26,33,0.08)]'
       }`}
     >
-      <GripVertical className="absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#D3D7E3] opacity-0 transition-opacity group-hover:opacity-100" />
-      <button
-        onPointerDown={(e) => e.stopPropagation()}
-        onClick={handleDeleteClick}
-        onBlur={() => setPendingDelete(false)}
-        aria-label="Delete card"
-        title={pendingDelete ? 'Click again to confirm' : 'Delete card'}
-        className={`absolute right-2 top-2 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded transition-colors ${
-          pendingDelete
-            ? 'bg-red-500 text-white opacity-100'
-            : 'text-[#D3D7E3] opacity-0 hover:bg-red-50 hover:text-red-500 group-hover:opacity-100'
-        }`}
-      >
-        <Trash2 className="h-3 w-3" />
-      </button>
+      {!readOnly && (
+        <>
+          <GripVertical className="absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#D3D7E3] opacity-0 transition-opacity group-hover:opacity-100" />
+          <button
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={handleDeleteClick}
+            onBlur={() => setPendingDelete(false)}
+            aria-label="Delete card"
+            title={pendingDelete ? 'Click again to confirm' : 'Delete card'}
+            className={`absolute right-2 top-2 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded transition-colors ${
+              pendingDelete
+                ? 'bg-red-500 text-white opacity-100'
+                : 'text-[#D3D7E3] opacity-0 hover:bg-red-50 hover:text-red-500 group-hover:opacity-100'
+            }`}
+          >
+            <Trash2 className="h-3 w-3" />
+          </button>
+        </>
+      )}
       <CardBody card={card} />
     </div>
   );
@@ -313,6 +322,7 @@ function ListColumn({
   onRenameList,
   onDeleteList,
   remoteDraggedCardIds,
+  readOnly,
 }: {
   list: ListItem;
   onAddCard: (listId: string, title: string) => void;
@@ -320,6 +330,7 @@ function ListColumn({
   onRenameList: (listId: string, title: string) => void;
   onDeleteList: (listId: string) => void;
   remoteDraggedCardIds: Set<string>;
+  readOnly?: boolean;
 }) {
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -329,11 +340,13 @@ function ListColumn({
   const { setNodeRef } = useDroppable({
     id: list.id,
     data: { type: 'container' },
+    disabled: readOnly,
   });
 
   const cardIds = list.cards.map((c) => c.id);
 
   function submitRename() {
+    if (readOnly) return;
     const trimmed = title.trim();
     if (trimmed && trimmed !== list.title) {
       onRenameList(list.id, trimmed);
@@ -355,7 +368,7 @@ function ListColumn({
             style={{ backgroundColor: list.accent }}
             aria-hidden="true"
           />
-          {editing ? (
+          {editing && !readOnly ? (
             <input
               autoFocus
               value={title}
@@ -372,8 +385,12 @@ function ListColumn({
             />
           ) : (
             <button
-              onClick={() => setEditing(true)}
-              className="truncate text-left font-[family-name:var(--font-display)] text-[14px] font-semibold text-[#171A21] hover:text-[#4C5FD5]"
+              onClick={() => {
+                if (!readOnly) setEditing(true);
+              }}
+              className={`truncate text-left font-[family-name:var(--font-display)] text-[14px] font-semibold text-[#171A21] ${
+                readOnly ? 'cursor-default' : 'hover:text-[#4C5FD5]'
+              }`}
             >
               {list.title}
             </button>
@@ -383,43 +400,45 @@ function ListColumn({
           </span>
         </div>
 
-        <div className="relative">
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label={`List options for ${list.title}`}
-            aria-expanded={menuOpen}
-            className="flex h-6 w-6 items-center justify-center rounded-lg text-[#6B7280] transition-colors hover:bg-white hover:text-[#171A21]"
-          >
-            <MoreVertical className="h-3.5 w-3.5" />
-          </button>
-          {menuOpen && (
-            <div
-              role="menu"
-              className="absolute right-0 top-7 z-20 w-36 rounded-xl border border-[#E3E5EC] bg-white p-1 shadow-lg"
+        {!readOnly && (
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label={`List options for ${list.title}`}
+              aria-expanded={menuOpen}
+              className="flex h-6 w-6 items-center justify-center rounded-lg text-[#6B7280] transition-colors hover:bg-white hover:text-[#171A21]"
             >
-              <button
-                role="menuitem"
-                onClick={() => {
-                  setMenuOpen(false);
-                  setEditing(true);
-                }}
-                className="flex w-full rounded-lg px-2.5 py-1.5 text-left text-[12.5px] text-[#171A21] hover:bg-[#F6F7FB]"
+              <MoreVertical className="h-3.5 w-3.5" />
+            </button>
+            {menuOpen && (
+              <div
+                role="menu"
+                className="absolute right-0 top-7 z-20 w-36 rounded-xl border border-[#E3E5EC] bg-white p-1 shadow-lg"
               >
-                Rename
-              </button>
-              <button
-                role="menuitem"
-                onClick={() => {
-                  setMenuOpen(false);
-                  onDeleteList(list.id);
-                }}
-                className="flex w-full rounded-lg px-2.5 py-1.5 text-left text-[12.5px] text-[#C4453D] hover:bg-red-50"
-              >
-                Delete list
-              </button>
-            </div>
-          )}
-        </div>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setEditing(true);
+                  }}
+                  className="flex w-full rounded-lg px-2.5 py-1.5 text-left text-[12.5px] text-[#171A21] hover:bg-[#F6F7FB]"
+                >
+                  Rename
+                </button>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onDeleteList(list.id);
+                  }}
+                  className="flex w-full rounded-lg px-2.5 py-1.5 text-left text-[12.5px] text-[#C4453D] hover:bg-red-50"
+                >
+                  Delete list
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto px-2.5 py-1">
@@ -431,31 +450,34 @@ function ListColumn({
                 card={card}
                 onDelete={onDeleteCard}
                 isRemoteBeingDragged={remoteDraggedCardIds.has(card.id)}
+                readOnly={readOnly}
               />
             ))}
           </div>
         </SortableContext>
       </div>
 
-      <div className="p-2.5 pt-1.5">
-        {adding ? (
-          <AddCardForm
-            onAdd={(title) => {
-              onAddCard(list.id, title);
-              setAdding(false);
-            }}
-            onCancel={() => setAdding(false)}
-          />
-        ) : (
-          <button
-            onClick={() => setAdding(true)}
-            className="flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] font-medium text-[#6B7280] transition-colors hover:bg-white hover:text-[#171A21]"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Add card
-          </button>
-        )}
-      </div>
+      {!readOnly && (
+        <div className="p-2.5 pt-1.5">
+          {adding ? (
+            <AddCardForm
+              onAdd={(title) => {
+                onAddCard(list.id, title);
+                setAdding(false);
+              }}
+              onCancel={() => setAdding(false)}
+            />
+          ) : (
+            <button
+              onClick={() => setAdding(true)}
+              className="flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] font-medium text-[#6B7280] transition-colors hover:bg-white hover:text-[#171A21]"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add card
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -464,7 +486,13 @@ function ListColumn({
 
 const LIST_COLOR_PALETTE = ['#4C5FD5', '#17C3B2', '#E8A33D', '#C4453D', '#8A5CF6'];
 
-export default function KanbanBoard({ boardId }: { boardId?: string }) {
+export default function KanbanBoard({
+  boardId,
+  readOnly = false,
+}: {
+  boardId?: string;
+  readOnly?: boolean;
+}) {
   const [lists, setLists] = useState<ListItem[]>(initialLists);
   const [activeCard, setActiveCard] = useState<CardItem | null>(null);
   const [errorBanner, setErrorBanner] = useState<string | null>(null);
@@ -520,7 +548,6 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
 
     socket.emit('join-board', { boardId });
 
-    // Live remote drag pointer tracking (as member drags around)
     const handleRemoteDragPointer = (data: RemoteDragState) => {
       if (data?.boardId === boardId) {
         setRemoteDrags((prev) => ({
@@ -530,7 +557,6 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
       }
     };
 
-    // Remote drag ended
     const handleRemoteDragEnd = (data: { clientId: string; boardId: string; lists?: ListItem[] }) => {
       if (data?.boardId === boardId) {
         setRemoteDrags((prev) => {
@@ -576,7 +602,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
 
   // Live mouse movement listener while actively dragging to stream cursor coordinates to all other members
   useEffect(() => {
-    if (!activeCard || !socket || !boardId) return;
+    if (readOnly || !activeCard || !socket || !boardId) return;
 
     const user = getStoredUser();
     const userName = user?.name || 'Teammate';
@@ -590,7 +616,6 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
 
     const handlePointerMove = (e: PointerEvent) => {
       const now = performance.now();
-      // Throttle broadcast to ~30ms (approx 30fps) for butter smooth multiplayer feel without spamming network
       if (now - lastDragEmitRef.current > 30) {
         lastDragEmitRef.current = now;
         socket.emit('board:drag-pointer', {
@@ -613,10 +638,11 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
     return () => {
       window.removeEventListener('pointermove', handlePointerMove);
     };
-  }, [activeCard, socket, boardId]);
+  }, [readOnly, activeCard, socket, boardId]);
 
   // 3-second debounced task update sync function
   const scheduleTaskSync = useCallback((taskId: string, payload: { boardListId?: string; position?: number; name?: string }) => {
+    if (readOnly) return;
     const existing = pendingTaskUpdates.current.get(taskId) || {};
     pendingTaskUpdates.current.set(taskId, { ...existing, ...payload });
 
@@ -639,10 +665,11 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
     }, 3000);
 
     taskTimers.current.set(taskId, timer);
-  }, []);
+  }, [readOnly]);
 
   // 3-second debounced list update sync function
   const scheduleListSync = useCallback((listId: string, payload: { name?: string }) => {
+    if (readOnly) return;
     const existing = pendingListUpdates.current.get(listId) || {};
     pendingListUpdates.current.set(listId, { ...existing, ...payload });
 
@@ -665,9 +692,10 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
     }, 3000);
 
     listTimers.current.set(listId, timer);
-  }, []);
+  }, [readOnly]);
 
   async function addCard(listId: string, title: string) {
+    if (readOnly) return;
     const tempId = crypto.randomUUID();
     const nextLists = lists.map((list) =>
       list.id === listId
@@ -704,6 +732,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
   }
 
   async function deleteCard(cardId: string) {
+    if (readOnly) return;
     const nextLists = lists.map((list) => ({
       ...list,
       cards: list.cards.filter((c) => c.id !== cardId),
@@ -722,6 +751,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
   }
 
   async function addList(title: string, accent: string) {
+    if (readOnly) return;
     const tempId = crypto.randomUUID();
     const nextLists = [...lists, { id: tempId, title, accent, cards: [] }];
     setLists(nextLists);
@@ -749,6 +779,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
   }
 
   function renameList(listId: string, title: string) {
+    if (readOnly) return;
     const nextLists = lists.map((list) => (list.id === listId ? { ...list, title } : list));
     setLists(nextLists);
 
@@ -759,6 +790,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
   }
 
   async function deleteList(listId: string) {
+    if (readOnly) return;
     const nextLists = lists.filter((list) => list.id !== listId);
     setLists(nextLists);
 
@@ -774,6 +806,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
   }
 
   function handleDragStart(event: DragStartEvent) {
+    if (readOnly) return;
     const id = event.active.id as string;
     const container = findContainer(lists, id);
     const card = lists.find((l) => l.id === container)?.cards.find((c) => c.id === id);
@@ -781,6 +814,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
   }
 
   function handleDragOver(event: DragOverEvent) {
+    if (readOnly) return;
     const { active, over } = event;
     if (!over) return;
 
@@ -801,7 +835,6 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
       const overIndex = overList.cards.findIndex((c) => c.id === overId);
       const insertAt = overIndex >= 0 ? overIndex : overList.cards.length;
 
-      // Schedule 3-second debounced API update for moved card position & container
       scheduleTaskSync(activeId, { boardListId: overContainer, position: insertAt });
 
       const nextLists = prev.map((list) => {
@@ -816,7 +849,6 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
         return list;
       });
 
-      // Broadcast move event immediately over WebSocket so other members see the card hop columns live
       if (socket && boardId) {
         socket.emit('board:move-card', { boardId, lists: nextLists });
       }
@@ -826,6 +858,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
   }
 
   function handleDragEnd(event: DragEndEvent) {
+    if (readOnly) return;
     const currentActiveCard = activeCard;
     setActiveCard(null);
 
@@ -855,13 +888,11 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
         const newIndex = list.cards.findIndex((c) => c.id === overId);
         if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return list;
 
-        // Schedule 3-second debounced API update for reordered position
         scheduleTaskSync(activeId, { boardListId: activeContainer, position: newIndex });
 
         return { ...list, cards: arrayMove(list.cards, oldIndex, newIndex) };
       });
 
-      // Broadcast final drop position and end drag event
       if (socket && boardId) {
         socket.emit('board:drag-end', { boardId, cardId: activeId, lists: nextLists });
         socket.emit('board:move-card', { boardId, lists: nextLists });
@@ -877,13 +908,22 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
 
   return (
     <DndContext
-      sensors={sensors}
+      sensors={readOnly ? [] : sensors}
       collisionDetection={closestCorners}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="flex flex-col h-full relative">
+        {readOnly && (
+          <div className="mx-6 mt-3 flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-2 text-[12.5px] font-medium text-amber-800 border border-amber-200">
+            <Eye className="h-4 w-4 text-amber-600 flex-shrink-0" />
+            <span>
+              <strong>View Only:</strong> You have viewer permissions on this workspace. Card movements and edits are disabled.
+            </span>
+          </div>
+        )}
+
         {errorBanner && (
           <div className="mx-6 mt-3 flex items-center justify-between rounded-xl bg-red-50 px-4 py-2.5 text-[13px] font-medium text-[#C4453D] border border-red-100">
             <span>{errorBanner}</span>
@@ -895,6 +935,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
             </button>
           </div>
         )}
+
         <div className="board-scroll flex h-full items-start gap-4 overflow-x-auto px-6 py-5">
           {lists.map((list) => (
             <ListColumn
@@ -905,20 +946,22 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
               onRenameList={renameList}
               onDeleteList={deleteList}
               remoteDraggedCardIds={remoteDraggedCardIds}
+              readOnly={readOnly}
             />
           ))}
-          <AddListColumn onAdd={addList} defaultColor={nextDefaultColor} />
+          {!readOnly && <AddListColumn onAdd={addList} defaultColor={nextDefaultColor} />}
         </div>
       </div>
 
-      {/* Local Drag Overlay */}
-      <DragOverlay dropAnimation={{ duration: 180, easing: 'ease' }}>
-        {activeCard && (
-          <div className="w-[248px] rotate-2 cursor-grabbing rounded-xl border border-[#4C5FD5] bg-white p-3.5 shadow-[0_20px_40px_rgba(76,95,213,0.22)] ring-2 ring-[#4C5FD5]/20">
-            <CardBody card={activeCard} />
-          </div>
-        )}
-      </DragOverlay>
+      {!readOnly && (
+        <DragOverlay dropAnimation={{ duration: 180, easing: 'ease' }}>
+          {activeCard && (
+            <div className="w-[248px] rotate-2 cursor-grabbing rounded-xl border border-[#4C5FD5] bg-white p-3.5 shadow-[0_20px_40px_rgba(76,95,213,0.22)] ring-2 ring-[#4C5FD5]/20">
+              <CardBody card={activeCard} />
+            </div>
+          )}
+        </DragOverlay>
+      )}
 
       {/* Remote Teammates' Live Dragging Cards Floating Overlay */}
       {Object.values(remoteDrags).map((drag) => (
@@ -934,7 +977,6 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
           }}
           className="w-[230px] rounded-xl border-2 border-[#4C5FD5] bg-white p-3 shadow-[0_16px_36px_rgba(23,26,33,0.2)] animate-in fade-in zoom-in-90 duration-150 rotate-3"
         >
-          {/* Teammate pill badge */}
           <div className="mb-1.5 flex items-center gap-1.5">
             <span
               className="flex h-4 w-4 items-center justify-center rounded-full text-[8.5px] font-bold text-white shadow-xs"
