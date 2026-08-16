@@ -48,38 +48,39 @@ export default function BoardDetailPage({
   return (
     <div className="flex h-full flex-col bg-[#F6F7FB]">
       {/* Board Top Header Subbar */}
-      <header className="flex flex-shrink-0 items-center justify-between gap-4 border-b border-[#E3E5EC] bg-white px-4 py-3 sm:px-7">
-        <div className="flex min-w-0 items-center gap-3">
+      <header className="flex flex-shrink-0 items-center justify-between gap-2 sm:gap-4 border-b border-[#E3E5EC] bg-white px-4 py-3 sm:px-7">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          {/* Back — always show chevron, hide text on very small screens */}
           <Link
             href="/dashboard/workspaces"
-            className="flex items-center gap-1 text-[13px] font-medium text-[#6B7280] transition-colors hover:text-[#171A21]"
+            className="flex items-center gap-1 text-[13px] font-medium text-[#6B7280] transition-colors hover:text-[#171A21] flex-shrink-0"
           >
             <ChevronLeft className="h-4 w-4" />
-            Workspaces
+            <span className="hidden sm:inline">Workspaces</span>
           </Link>
-          <span className="text-[#D3D7E3]">/</span>
+          <span className="text-[#D3D7E3] hidden sm:inline">/</span>
           {workspace && (
             <>
               <Link
                 href={`/dashboard/workspaces?workspace=${workspace.id}`}
-                className="text-[13px] font-medium text-[#6B7280] hover:text-[#171A21]"
+                className="hidden sm:inline text-[13px] font-medium text-[#6B7280] hover:text-[#171A21] truncate max-w-[100px]"
               >
                 {workspace.name}
               </Link>
-              <span className="text-[#D3D7E3]">/</span>
+              <span className="hidden sm:inline text-[#D3D7E3]">/</span>
             </>
           )}
           <span
             className="h-2.5 w-2.5 flex-shrink-0 rounded-full shadow-xs"
             style={{ backgroundColor: currentBoard?.accent || '#4C5FD5' }}
           />
-          <h1 className="truncate font-[family-name:var(--font-display)] text-[16px] font-bold text-[#171A21]">
+          <h1 className="truncate font-[family-name:var(--font-display)] text-[15px] sm:text-[16px] font-bold text-[#171A21]">
             {currentBoard?.name ?? 'Board'}
           </h1>
 
           {workspace?.role && (
             <span
-              className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10.5px] font-semibold border ${
+              className={`hidden sm:inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10.5px] font-semibold border flex-shrink-0 ${
                 isReadOnly
                   ? 'border-amber-200 bg-amber-50 text-amber-700'
                   : workspace.role === 'owner'
@@ -93,7 +94,7 @@ export default function BoardDetailPage({
           )}
         </div>
 
-        <div className="flex flex-shrink-0 items-center gap-3">
+        <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3">
           {currentBoard?.members && currentBoard.members.length > 0 && (
             <AvatarStack members={currentBoard.members} />
           )}
@@ -101,10 +102,10 @@ export default function BoardDetailPage({
           {workspace?.role === 'owner' && (
             <button
               onClick={() => setInviteModalOpen(true)}
-              className="flex items-center gap-1.5 rounded-xl border border-[#E3E5EC] bg-white px-3.5 py-1.5 text-[12.5px] font-semibold text-[#171A21] shadow-xs transition-all hover:border-[#4C5FD5] hover:text-[#4C5FD5]"
+              className="flex items-center gap-1.5 rounded-xl border border-[#E3E5EC] bg-white px-2.5 sm:px-3.5 py-1.5 text-[12.5px] font-semibold text-[#171A21] shadow-xs transition-all hover:border-[#4C5FD5] hover:text-[#4C5FD5]"
             >
               <UserPlus className="h-3.5 w-3.5" />
-              Invite
+              <span className="hidden sm:inline">Invite</span>
             </button>
           )}
         </div>

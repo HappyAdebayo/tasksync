@@ -9,12 +9,19 @@ import {
   Kanban,
   LogOut,
   ChevronDown,
+  X,
 } from 'lucide-react';
 import { useWorkspaces } from '@/lib/workspaces';
 import { getStoredUser, clearAuthToken } from '@/lib/api';
 import { useSocket } from '@/lib/socket';
 
-export default function Sidebar() {
+interface SidebarProps {
+  /** Mobile: whether the sidebar drawer is open */
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
+export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const workspaces = useWorkspaces();
@@ -26,6 +33,12 @@ export default function Sidebar() {
   useEffect(() => {
     setUser(getStoredUser());
   }, []);
+
+  // Close mobile sidebar when navigating
+  useEffect(() => {
+    onMobileClose?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const handleLogout = () => {
     clearAuthToken();
@@ -46,10 +59,10 @@ export default function Sidebar() {
   const isWorkspacesActive =
     pathname.startsWith('/dashboard/workspaces') || pathname.startsWith('/dashboard/boards');
 
-  return (
-    <aside className="flex h-screen w-60 flex-col border-r border-[#E3E5EC] bg-white select-none flex-shrink-0">
+  const sidebarContent = (
+    <aside className="flex h-full w-60 flex-col border-r border-[#E3E5EC] bg-white select-none">
       {/* Brand Header */}
-      <div className="flex h-16 items-center justify-between border-b border-[#E3E5EC] px-5">
+      <div className="flex h-16 items-center justify-between border-b border-[#E3E5EC] px-5 flex-shrink-0">
         <Link href="/dashboard" className="flex items-center gap-2.5">
           <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#4C5FD5] to-[#3B4CB8] shadow-xs text-white">
             <Kanban className="h-4 w-4" />
@@ -64,6 +77,15 @@ export default function Sidebar() {
             TaskSync
           </span>
         </Link>
+
+        {/* Mobile close button */}
+        <button
+          onClick={onMobileClose}
+          aria-label="Close menu"
+          className="lg:hidden flex h-8 w-8 items-center justify-center rounded-xl text-[#8E95A5] hover:bg-[#F6F7FB] hover:text-[#171A21] transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Navigation Links */}
@@ -76,7 +98,7 @@ export default function Sidebar() {
               : 'text-[#6B7280] hover:bg-[#F6F7FB] hover:text-[#171A21]'
           }`}
         >
-          <Home className={`h-4 w-4 ${isDashboardActive ? 'text-[#4C5FD5]' : 'text-[#8E95A5]'}`} />
+          <Home className={`h-4 w-4 flex-shrink-0 ${isDashboardActive ? 'text-[#4C5FD5]' : 'text-[#8E95A5]'}`} />
           Dashboard
         </Link>
 
@@ -89,12 +111,12 @@ export default function Sidebar() {
           }`}
         >
           <div className="flex items-center gap-3">
-            <Folder className={`h-4 w-4 ${isWorkspacesActive ? 'text-[#4C5FD5]' : 'text-[#8E95A5]'}`} />
+            <Folder className={`h-4 w-4 flex-shrink-0 ${isWorkspacesActive ? 'text-[#4C5FD5]' : 'text-[#8E95A5]'}`} />
             Workspaces
           </div>
           {workspaces.length > 0 && (
             <span
-              className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+              className={`rounded-full px-2 py-0.5 text-[11px] font-semibold flex-shrink-0 ${
                 isWorkspacesActive ? 'bg-[#4C5FD5] text-white' : 'bg-[#F0F2F7] text-[#6B7280]'
               }`}
             >
@@ -105,7 +127,7 @@ export default function Sidebar() {
       </nav>
 
       {/* User Profile Footer */}
-      <div className="border-t border-[#E3E5EC] p-3 bg-[#FAFAFC]">
+      <div className="border-t border-[#E3E5EC] p-3 bg-[#FAFAFC] flex-shrink-0">
         <div className="relative">
           <button
             onClick={() => setProfileOpen((v) => !v)}
@@ -120,7 +142,7 @@ export default function Sidebar() {
                 <p className="truncate text-[11px] text-[#8E95A5]">{userEmail}</p>
               </div>
             </div>
-            <ChevronDown className={`h-3.5 w-3.5 text-[#8E95A5] transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-[#8E95A5] transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {profileOpen && (
@@ -141,5 +163,32 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* ── Desktop: always visible fixed sidebar ── */}
+      <div className="hidden lg:flex h-screen w-60 flex-shrink-0">
+        {sidebarContent}
+      </div>
+
+      {/* ── Mobile: slide-in drawer with backdrop ── */}
+      {/* Backdrop */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden ${
+          mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onMobileClose}
+        aria-hidden="true"
+      />
+      {/* Drawer */}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 h-full w-60 transition-transform duration-300 ease-[cubic-bezier(.32,.72,0,1)] lg:hidden ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {sidebarContent}
+      </div>
+    </>
   );
 }

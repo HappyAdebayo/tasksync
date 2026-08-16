@@ -14,6 +14,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const router = useRouter();
 
   // Silently refresh the access token every 12 minutes
@@ -42,12 +43,15 @@ export default function DashboardLayout({
   return (
     <SocketProvider>
       <div className="flex h-screen overflow-hidden bg-[#F6F7FB] text-[#171A21]">
-        {/* Left Sidebar */}
-        <Sidebar />
+        {/* Sidebar (desktop: always visible, mobile: slide-in drawer) */}
+        <Sidebar
+          mobileOpen={mobileSidebarOpen}
+          onMobileClose={() => setMobileSidebarOpen(false)}
+        />
 
         {/* Main Content Area */}
         <div className="flex flex-1 flex-col overflow-hidden min-w-0">
-          <Navbar />
+          <Navbar onMenuClick={() => setMobileSidebarOpen(true)} />
           <main className="flex-1 overflow-y-auto">
             {children}
           </main>

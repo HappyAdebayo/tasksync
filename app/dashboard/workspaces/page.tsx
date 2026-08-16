@@ -125,7 +125,7 @@ function WorkspacesContent() {
   };
 
   return (
-    <main className="mx-auto max-w-[1200px] px-6 py-8">
+    <main className="mx-auto max-w-[1200px] px-4 sm:px-6 py-6 sm:py-8">
       {errorMessage && (
         <div className="mb-6 flex items-center justify-between rounded-xl bg-red-50 px-4 py-3 text-[13.5px] font-medium text-[#C4453D] border border-red-200">
           <span>{errorMessage}</span>

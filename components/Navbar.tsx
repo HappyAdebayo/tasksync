@@ -9,6 +9,7 @@ import {
   Folder,
   Building2,
   User,
+  Menu,
   Kanban,
   Mail,
   CheckCircle2,
@@ -161,7 +162,11 @@ function NotifDropdown({
 
 // ─── Main Navbar Component ─────────────────────────────────────────────────────
 
-export default function Navbar() {
+interface NavbarProps {
+  onMenuClick?: () => void;
+}
+
+export default function Navbar({ onMenuClick }: NavbarProps) {
   const router = useRouter();
   const notifications = useNotifications();
   const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -261,10 +266,19 @@ export default function Navbar() {
   const orderedTypes: SearchResult['type'][] = ['board', 'task', 'person', 'workspace'];
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-[#E3E5EC] bg-white/95 px-6 backdrop-blur-md gap-4">
+    <header className="sticky top-0 z-20 flex h-16 items-center border-b border-[#E3E5EC] bg-white/95 px-4 sm:px-6 backdrop-blur-md gap-3">
+
+      {/* ── Hamburger (mobile only) ── */}
+      <button
+        onClick={onMenuClick}
+        aria-label="Open menu"
+        className="lg:hidden flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-[#E3E5EC] bg-white text-[#6B7280] hover:border-[#4C5FD5] hover:text-[#4C5FD5] transition-colors"
+      >
+        <Menu className="h-4 w-4" />
+      </button>
 
       {/* Search */}
-      <div className="relative flex-1 max-w-lg" ref={searchRef}>
+      <div className="relative flex-1 min-w-0" ref={searchRef}>
         <div className="flex items-center gap-2 rounded-xl border border-[#E3E5EC] bg-[#F6F7FB] px-3.5 py-2 transition-all focus-within:border-[#4C5FD5] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#4C5FD5]/10">
           <Search className="h-3.5 w-3.5 flex-shrink-0 text-[#8E95A5]" />
           <input

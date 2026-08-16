@@ -936,7 +936,7 @@ export default function KanbanBoard({
           </div>
         )}
 
-        <div className="board-scroll flex h-full items-start gap-4 overflow-x-auto px-6 py-5">
+        <div className="board-scroll flex h-full items-start gap-3 sm:gap-4 overflow-x-auto px-4 sm:px-6 py-4 sm:py-5">
           {lists.map((list) => (
             <ListColumn
               key={list.id}
