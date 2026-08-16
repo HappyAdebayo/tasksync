@@ -29,14 +29,28 @@ function Marquee() {
   );
 }
 
-/* ─── App Window (Hero Centerpiece) ─────────────────────────────────────── */
+interface PreviewCard {
+  title: string;
+  tag: string;
+  tagColor: string;
+  avatar: string;
+  due?: string;
+  progress?: number;
+}
+
+interface PreviewCol {
+  color: string;
+  label: string;
+  cards: PreviewCard[];
+}
 
 function AppWindow() {
-  const BOARD = {
+  const BOARD: { name: string; cols: PreviewCol[] } = {
     name: 'Q3 Product Launch',
     cols: [
       {
-        color: '#4C5FD5', label: 'Backlog',
+        color: '#4C5FD5',
+        label: 'Backlog',
         cards: [
           { title: 'User research interviews', tag: 'Research', tagColor: '#8A5CF6', due: 'Aug 20', avatar: '#4C5FD5' },
           { title: 'Competitive analysis doc', tag: 'Docs', tagColor: '#17C3B2', due: 'Aug 22', avatar: '#17C3B2' },
@@ -44,21 +58,24 @@ function AppWindow() {
         ],
       },
       {
-        color: '#17C3B2', label: 'In Progress',
+        color: '#17C3B2',
+        label: 'In Progress',
         cards: [
           { title: 'Onboarding flow redesign', tag: 'Design', tagColor: '#E8A33D', due: 'Aug 18', avatar: '#4C5FD5', progress: 65 },
           { title: 'API rate limiting service', tag: 'Backend', tagColor: '#4C5FD5', due: 'Aug 19', avatar: '#17C3B2', progress: 40 },
         ],
       },
       {
-        color: '#E8A33D', label: 'Review',
+        color: '#E8A33D',
+        label: 'Review',
         cards: [
           { title: 'Landing page copy pass', tag: 'Content', tagColor: '#C4453D', due: 'Aug 17', avatar: '#E8A33D', progress: 90 },
           { title: 'Mobile performance audit', tag: 'Frontend', tagColor: '#4C5FD5', avatar: '#8A5CF6' },
         ],
       },
       {
-        color: '#17C3B2', label: 'Done',
+        color: '#17C3B2',
+        label: 'Done',
         cards: [
           { title: 'Auth flow implementation', tag: 'Backend', tagColor: '#4C5FD5', avatar: '#4C5FD5' },
           { title: 'Figma handoff complete', tag: 'Design', tagColor: '#E8A33D', avatar: '#17C3B2' },
