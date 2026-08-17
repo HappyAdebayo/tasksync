@@ -10,7 +10,7 @@ import { getAuthToken } from './api';
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
-  lastMessage: any;
+  lastMessage: any; 
 }
 
 const SocketContext = createContext<SocketContextType>({
@@ -19,7 +19,7 @@ const SocketContext = createContext<SocketContextType>({
   lastMessage: null,
 });
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001';
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || process.env.NEXT_PUBLIC_API_URL || process.env.NEXTPUBLICAPIURL;
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
