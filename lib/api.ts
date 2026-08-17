@@ -8,8 +8,8 @@ function getApiUrl(endpoint: string): string {
   if (!API_BASE_URL) {
     if (typeof window !== 'undefined') {
       console.warn(
-        `[TaskSync API] NEXT_PUBLIC_API_URL is not configured. Requesting relative path '${cleanEndpoint}'. ` +
-        `Please set NEXT_PUBLIC_API_URL in your Vercel project environment variables to point to your backend server.`
+        `[TaskSync API] NEXTPUBLICAPIURL is not configured. Requesting relative path '${cleanEndpoint}'. ` +
+        `Please set NEXTPUBLICAPIURL in your Vercel project environment variables to point to your backend server.`
       );
     }
     return cleanEndpoint;
