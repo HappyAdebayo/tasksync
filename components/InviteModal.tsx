@@ -1,7 +1,7 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
-import { X, Mail, Check } from 'lucide-react';
+import { X, Mail, Check, Loader2 } from 'lucide-react';
 import { sendInvitationApi } from '@/lib/api';
 
 type Role = 'editor' | 'viewer';
@@ -38,17 +38,19 @@ export default function InviteModal({
   const [members, setMembers] = useState<Member[]>(initialMembers);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<Role>('editor');
+  const [isSending, setIsSending] = useState(false);
   const [sentMessage, setSentMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   async function handleSend() {
+    if (isSending) return;
     const trimmed = email.trim();
     if (!trimmed) return;
     setErrorMessage(null);
     setSentMessage(null);
-    
+    setIsSending(true);
 
     try {
       await sendInvitationApi({ email: trimmed, workspaceId, role });
@@ -57,6 +59,8 @@ export default function InviteModal({
       setTimeout(() => setSentMessage(null), 3000);
     } catch (err: any) {
       setErrorMessage(err?.message || 'Failed to send invite.');
+    } finally {
+      setIsSending(false);
     }
   }
 
@@ -123,10 +127,17 @@ export default function InviteModal({
 
           <button
             onClick={handleSend}
-            disabled={!email.trim()}
-            className="mt-3.5 w-full rounded-lg bg-[#4C5FD5] py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#3E4EC0] disabled:cursor-not-allowed disabled:bg-[#C7CCE5]"
+            disabled={!email.trim() || isSending}
+            className="mt-3.5 flex w-full items-center justify-center gap-2 rounded-lg bg-[#4C5FD5] py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#3E4EC0] disabled:cursor-not-allowed disabled:bg-[#C7CCE5]"
           >
-            Send Invite
+            {isSending ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <span>Sending invite...</span>
+              </>
+            ) : (
+              'Send Invite'
+            )}
           </button>
 
           {sentMessage && (
