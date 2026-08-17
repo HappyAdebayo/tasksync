@@ -1,4 +1,22 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXTPUBLICAPIURL;
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXTPUBLICAPIURL ||
+  ''
+).replace(/\/+$/, '');
+
+function getApiUrl(endpoint: string): string {
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  if (!API_BASE_URL) {
+    if (typeof window !== 'undefined') {
+      console.warn(
+        `[TaskSync API] NEXT_PUBLIC_API_URL is not configured. Requesting relative path '${cleanEndpoint}'. ` +
+        `Please set NEXT_PUBLIC_API_URL in your Vercel project environment variables to point to your backend server.`
+      );
+    }
+    return cleanEndpoint;
+  }
+  return `${API_BASE_URL}${cleanEndpoint}`;
+}
 
 // ─── Token / User Storage ────────────────────────────────────────────────────
 
@@ -57,7 +75,7 @@ export async function silentRefresh(): Promise<boolean> {
   if (!refreshToken) return false;
 
   try {
-    const response = await fetch(`${API_BASE_URL}/users/refresh`, {
+    const response = await fetch(getApiUrl('/users/refresh'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken }),
@@ -112,16 +130,17 @@ async function apiRequest<T>(
   }
 
   const method = options.method || 'GET';
+  const url = getApiUrl(endpoint);
 
   let response: Response;
   try {
-    response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    response = await fetch(url, {
       ...options,
       headers,
     });
   } catch (netErr: any) {
     const errorMsg = netErr?.message || 'Network error: Unable to reach server';
-    console.error(`[API Network Error] ${method} ${endpoint}:`, errorMsg);
+    console.error(`[API Network Error] ${method} ${url}:`, errorMsg);
     throw new Error(errorMsg);
   }
 

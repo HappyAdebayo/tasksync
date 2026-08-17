@@ -19,7 +19,12 @@ const SocketContext = createContext<SocketContextType>({
   lastMessage: null,
 });
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || process.env.NEXT_PUBLIC_API_URL || process.env.NEXTPUBLICAPIURL;
+const WS_URL = (
+  process.env.NEXT_PUBLIC_WS_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXTPUBLICAPIURL ||
+  ''
+).replace(/\/+$/, '');
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -27,9 +32,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [lastMessage, setLastMessage] = useState<any>(null);
 
   useEffect(() => {
+    if (!WS_URL && typeof window !== 'undefined') {
+      console.warn('[TaskSync WebSocket] NEXT_PUBLIC_API_URL is not set. WebSocket cannot establish connection to backend.');
+    }
+
     const token = getAuthToken();
 
-    const socketInstance = io(WS_URL, {
+    const socketInstance = io(WS_URL || undefined, {
       transports: ['websocket', 'polling'],
       withCredentials: true,
       auth: {

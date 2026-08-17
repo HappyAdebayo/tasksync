@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
@@ -28,7 +28,11 @@ type SearchResult =
   | { type: 'task'; id: string; name: string; boardId: string; workspaceId: string; boardListId: string }
   | { type: 'person'; id: string; name: string; email: string; workspaceId: string };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXTPUBLICAPIURL ||
+  ''
+).replace(/\/+$/, '');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -202,7 +206,8 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
     setIsSearching(true);
     try {
       const token = getAuthToken();
-      const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(q)}`, {
+      const searchUrl = API_BASE ? `${API_BASE}/search?q=${encodeURIComponent(q)}` : `/search?q=${encodeURIComponent(q)}`;
+      const res = await fetch(searchUrl, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) return;
