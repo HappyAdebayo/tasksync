@@ -1,7 +1,4 @@
-const API_BASE_URL = (
-  process.env.NEXTPUBLICAPIURL ||
-  ''
-).replace(/\/+$/, '');
+const API_BASE_URL = 'https://tasksync-backend-glkr.onrender.com'
 
 function getApiUrl(endpoint: string): string {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;

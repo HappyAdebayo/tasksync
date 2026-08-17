@@ -19,10 +19,7 @@ const SocketContext = createContext<SocketContextType>({
   lastMessage: null,
 });
 
-const WS_URL = (
-  process.env.NEXTPUBLICAPIURL ||
-  ''
-).replace(/\/+$/, '');
+const WS_URL = 'https://tasksync-backend-glkr.onrender.com'
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
