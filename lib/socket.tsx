@@ -28,7 +28,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!WS_URL && typeof window !== 'undefined') {
-      console.warn('[TaskSync WebSocket] NEXT_PUBLIC_API_URL is not set. WebSocket cannot establish connection to backend.');
+      // console.warn('[TaskSync WebSocket] NEXT_PUBLIC_API_URL is not set. WebSocket cannot establish connection to backend.');
     }
 
     const token = getAuthToken();
@@ -45,7 +45,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     });
 
     socketInstance.on('connect', () => {
-      console.log('[WebSocket] Connected with socket ID:', socketInstance.id);
+      // console.log('[WebSocket] Connected with socket ID:', socketInstance.id);
       setIsConnected(true);
 
       const currentToken = getAuthToken();
@@ -56,37 +56,37 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     });
 
     socketInstance.on('disconnect', (reason) => {
-      console.log('[WebSocket] Disconnected:', reason);
+      // console.log('[WebSocket] Disconnected:', reason);
       setIsConnected(false);
     });
 
     socketInstance.on('authenticated', (data) => {
-      console.log('[WebSocket] User room authenticated:', data);
+      // console.log('[WebSocket] User room authenticated:', data);
     });
 
     socketInstance.on('test-response', (data) => {
-      console.log('[WebSocket] Server response:', data);
+      // console.log('[WebSocket] Server response:', data);
       setLastMessage(data);
     });
 
     // Realtime event triggers for notifications and workspace updates
     socketInstance.on('notification:new', (data) => {
-      console.log('[WebSocket] ⚡ Realtime notification received (notification:new):', data);
+      // console.log('[WebSocket] ⚡ Realtime notification received (notification:new):', data);
       refreshNotifications();
     });
 
     socketInstance.on('notification', (data) => {
-      console.log('[WebSocket] ⚡ Realtime notification received (notification):', data);
+      // console.log('[WebSocket] ⚡ Realtime notification received (notification):', data);
       refreshNotifications();
     });
 
     socketInstance.on('workspace-update', () => {
-      console.log('[WebSocket] ⚡ Workspace updated');
+      // console.log('[WebSocket] ⚡ Workspace updated');
       refreshWorkspaces();
     });
 
     socketInstance.on('board-update', () => {
-      console.log('[WebSocket] ⚡ Board updated');
+      // console.log('[WebSocket] ⚡ Board updated');
       refreshBoards();
     });
 
